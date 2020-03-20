@@ -11,6 +11,12 @@
 # production
 /build
 
+# developer specific settings
+/.idea/workspace.xml
+/.idea/usage.statistics.xml
+/.idea/tasks.xml
+/.idea/shelf
+
 # misc
 .DS_Store
 .env.local

@@ -1,21 +1,21 @@
 import React from "react";
 import FileTree from "./FileTree";
 import {v4 as uuid} from "uuid";
-import {Gate} from "../../gates/types";
+import {Specification} from "../../logic/types";
 
 interface Props {
-    gates: Gate[],
+    specifications: Specification[],
 
-    newGate: (uuid: string) => {}
+    newSpecification: (uuid: string) => {}
 }
 
-const BrowserPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
-    const handleNewGate = () => newGate(uuid());
+const BrowserPane: React.FunctionComponent<Props> = ({specifications, newSpecification}) => {
+    const handleNewGate = () => newSpecification(uuid());
 
     return (
         <div className='browser'>
             <button onClick={handleNewGate}>+</button>
-            <FileTree gates={gates} />
+            <FileTree specifications={specifications} />
         </div>
     );
 };

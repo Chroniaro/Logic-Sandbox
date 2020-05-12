@@ -1,15 +1,15 @@
 import {connect} from "react-redux";
 import BrowserPane from "./subcomponents/BrowserPane";
-import {newGate} from "./interface";
+import {newSpecification} from "./interface";
 import {State} from "../app/reducer";
-import {gatesSelector} from "./interface";
+import {specificationsSelector} from "./interface";
 
 const mapStateToProps = (state: State) => ({
-    gates: gatesSelector(state)
+    specifications: specificationsSelector(state)
 });
 
 const mapDispatchToProps = {
-    newGate
+    newSpecification
 };
 
 export default connect(

@@ -1,21 +1,21 @@
 import {createReducer} from "@reduxjs/toolkit";
-import {newGate} from "./interface";
-import {Gate} from "../gates/types";
+import {newSpecification} from "./interface";
+import {Specification} from "../logic/types";
 
 export interface State {
-    gates: Gate[]
+    specifications: Specification[]
 }
 
 export default createReducer<State>(
     {
-        gates: []
+        specifications: []
     },
     builder =>
         builder
-            .addCase(newGate, (state, action) => {
-                state.gates.push({
+            .addCase(newSpecification, (state, action) => {
+                state.specifications.push({
                     uuid: action.payload.uuid,
-                    name: "New Gate"
+                    name: "New Specification"
                 });
             })
 );

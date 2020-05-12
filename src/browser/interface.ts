@@ -1,8 +1,8 @@
 import {createAction, createSelector} from "@reduxjs/toolkit";
 import {browserSelector} from "../app/interface";
 
-export const newGate = createAction(
-    'browser/newGate',
+export const newSpecification = createAction(
+    'browser/newSpecification',
     (uuid: string) => ({
         payload: {
             uuid
@@ -10,7 +10,7 @@ export const newGate = createAction(
     })
 );
 
-export const gatesSelector = createSelector(
+export const specificationsSelector = createSelector(
     browserSelector,
-    browser => browser.gates
+    browser => browser.specifications
 );

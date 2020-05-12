@@ -1,16 +1,16 @@
 import React from "react";
-import {Gate} from "../../gates/types";
+import {Specification} from "../../logic/types";
 
 interface Props {
-    gates: Gate[]
+    specifications: Specification[]
 }
 
-const FileTree: React.FunctionComponent<Props> = ({gates}) => {
+const FileTree: React.FunctionComponent<Props> = ({specifications}) => {
     return (
         <ul> {
-          gates.map(gate => (
-              <li key={gate.uuid}> {
-                 gate.name
+          specifications.map(specification => (
+              <li key={specification.uuid}> {
+                 specification.name
               } </li>
           ))
         } </ul>

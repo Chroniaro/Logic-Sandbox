@@ -34,6 +34,9 @@ html, body, #root {
   flex-grow: 1;
 
   background-color: antiquewhite;
+  overflow: scroll;
+
+  position: relative;
 }
 
 .workbench-gate {

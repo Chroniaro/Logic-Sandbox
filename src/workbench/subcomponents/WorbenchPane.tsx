@@ -1,36 +1,36 @@
-import React, {MouseEvent} from "react";
+import React from "react";
 import {Gate} from "../types";
-import {Specification} from "../../logic/types";
+import {Specification, SpecificationDragItem} from "../../logic/types";
+import {useRelativeDropPosition} from "../../app/util";
 
 interface Props {
     gates: Gate[],
-    newGateSpec: Specification | undefined,
 
-    newGate: (specification: Specification, x: number, y: number) => {}
+    newGate: (specification: Specification, x: number, y: number) => void
 }
 
-const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGateSpec, newGate}) => {
-    const handleOnClick = (event: MouseEvent) => {
-        console.log(newGateSpec);
+const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
+    const [dropRef] = useRelativeDropPosition<SpecificationDragItem, void, {}>({
+        accept: 'specification',
 
-        if (newGateSpec)
-            newGate(
-                newGateSpec,
-                event.screenX,
-                event.screenY
-            )
-    };
+        drop(item, monitor, dropPos) {
+            newGate(item.specification, dropPos.x, dropPos.y)
+        }
+    });
 
     return (
-        <div className='workbench' onClick={handleOnClick}> {
+        <div
+            className='workbench'
+            ref={dropRef}
+        > {
             gates.map(gate => (
-                <div
+                <span
                     className='workbench-gate'
                     key={gate.uuid}
                     style={{left: gate.x, top: gate.y}}
                 > {
                     gate.specification.name
-                } </div>
+                } </span>
             ))
         } </div>
     );

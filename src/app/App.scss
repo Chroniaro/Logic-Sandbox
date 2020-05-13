@@ -1,17 +1,22 @@
-// use the full space
-html, body, #root, .app {
+@mixin useAllAvailableSpace {
   margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
 }
 
+html, body, #root {
+  @include useAllAvailableSpace;
+}
+
 .app {
+  @include useAllAvailableSpace;
+
   text-align: center;
 }
 
 .work-area {
-  width: 100%;
-  height: 100%;
+  @include useAllAvailableSpace;
 
   display: flex;
   flex-direction: row;

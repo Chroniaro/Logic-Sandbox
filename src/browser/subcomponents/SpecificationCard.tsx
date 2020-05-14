@@ -1,13 +1,14 @@
 import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
+import GateView from "../../logic/subcomponents/GateView";
 
 interface Props {
     specification: Specification
 }
 
 const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
-    const [, dragRef] = useDrag<SpecificationDragItem, {}, {}>({
+    const [, dragConnector] = useDrag<SpecificationDragItem, {}, {}>({
         item: {
             type: 'specification',
             specification
@@ -17,9 +18,9 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
     return (
         <div
             className='browser-specification-card'
-            ref={dragRef}
         >
-            {specification.name}
+            <div>{specification.name}</div>
+            <GateView ref={dragConnector} specification={specification}/>
         </div>
     );
 };

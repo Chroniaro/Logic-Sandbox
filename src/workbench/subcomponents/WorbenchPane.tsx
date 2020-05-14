@@ -2,7 +2,7 @@ import React from "react";
 import {Gate} from "../types";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useRelativeDropPosition} from "../../app/util";
-import GateView from "./GateView";
+import GateView from "../../logic/subcomponents/GateView";
 
 interface Props {
     gates: Gate[],
@@ -25,7 +25,19 @@ const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
             ref={dropRef}
         > {
             gates.map(gate => (
-                <GateView key={gate.uuid} gate={gate}/>
+                <span
+                    style={{
+                        position: 'absolute',
+                        left: gate.x,
+                        top: gate.y
+                    }}
+                >
+                    <GateView
+                        key={gate.uuid}
+                        specification={gate.specification}
+                    />
+                </span>
+
             ))
         } </div>
     );

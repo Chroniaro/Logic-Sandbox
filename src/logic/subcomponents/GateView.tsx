@@ -1,26 +1,29 @@
+import "./GateView.css";
+
 import React from "react";
 import RowOfTriangles from "./RowOfTriangles";
-import {Gate} from "../types";
+import {Specification} from "../types";
 
 interface Props {
-    gate: Gate;
+    specification: Specification;
 }
 
-const GateView: React.FunctionComponent<Props> = ({gate}) => {
-    return (
+type Ref = HTMLDivElement;
+const GateView = React.forwardRef<Ref, Props>(
+    ({specification}, forwardRef) => (
         <div
-            className='workbench-gate'
-            style={{left: gate.x, top: gate.y}}
+            className='gate-view'
+            ref={forwardRef}
         >
             <RowOfTriangles styles={['normal', 'selected']}/>
 
             <div className='specification'>
-                {gate.specification.name}
+                {specification.name}
             </div>
 
             <RowOfTriangles styles={['highlighted', 'normal', 'normal']}/>
         </div>
-    );
-};
+    )
+);
 
 export default GateView;

@@ -1,16 +1,8 @@
-.workbench {
-  position: relative;
-
-  overflow: scroll;
-  background-color: antiquewhite;
-}
-
-.workbench-gate {
-  position: absolute;
-
+.gate-view {
   font-size: 0;
   white-space: nowrap;
   overflow: hidden;
+  display: inline-block;
 
   .row-of-triangles {
     width: 100%;

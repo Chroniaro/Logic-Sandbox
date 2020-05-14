@@ -1,5 +1,3 @@
-import "./Browser.css";
-
 import {connect} from "react-redux";
 import BrowserPane from "./subcomponents/BrowserPane";
 import {newSpecification, specificationsSelector} from "./interface";

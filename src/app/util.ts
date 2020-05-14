@@ -36,7 +36,7 @@ export function useRelativeDropPosition<DragObject extends DragObjectWithType, D
             if (component === undefined)
                 throw Error("Drop occurred while component was not mounted");
 
-            const absoluteDropPosition = monitor.getClientOffset();
+            const absoluteDropPosition = monitor.getSourceClientOffset();
             if (absoluteDropPosition === null)
                 throw Error("Drop position is undefined");
 

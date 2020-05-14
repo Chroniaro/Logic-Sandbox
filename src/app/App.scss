@@ -25,9 +25,18 @@ html, body, #root {
   .browser {
     flex-grow: 1;
     max-width: 300px;
+    background-color: lavender;
+    overflow: scroll;
+
+    .browser-specification-card {
+      border: 1px solid darkblue;
+    }
   }
 
   .workbench {
     flex-grow: 1;
+    position: relative;
+    overflow: scroll;
+    background-color: antiquewhite;
   }
 }

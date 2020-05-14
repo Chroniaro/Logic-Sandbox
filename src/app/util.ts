@@ -37,8 +37,8 @@ export function useRelativeDropPosition<DragObject extends DragObjectWithType, D
                 throw Error("Drop position is undefined");
 
             const relativeDropPosition = {
-                x: absoluteDropPosition.x - component.offsetLeft,
-                y: absoluteDropPosition.y - component.offsetTop
+                x: absoluteDropPosition.x - component.offsetLeft + component.scrollLeft,
+                y: absoluteDropPosition.y - component.offsetTop + component.scrollTop
             };
 
             if (spec.drop !== undefined)

@@ -2,6 +2,7 @@ import React from "react";
 import {Gate} from "../types";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useRelativeDropPosition} from "../../app/util";
+import GateView from "./GateView";
 
 interface Props {
     gates: Gate[],
@@ -24,13 +25,7 @@ const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
             ref={dropRef}
         > {
             gates.map(gate => (
-                <span
-                    className='workbench-gate'
-                    key={gate.uuid}
-                    style={{left: gate.x, top: gate.y}}
-                > {
-                    gate.specification.name
-                } </span>
+                <GateView key={gate.uuid} gate={gate}/>
             ))
         } </div>
     );

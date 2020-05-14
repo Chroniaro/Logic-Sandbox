@@ -1,8 +1,9 @@
 import React from "react";
 import {Gate} from "../types";
 import {Specification, SpecificationDragItem} from "../../logic/types";
-import {useRelativeDropPosition} from "../../app/util";
+import {useRelativeDropPosition} from "../../app/util/relativeDropPosition";
 import GateView from "../../logic/subcomponents/GateView";
+import AbsolutelyPositionedComponent from "../../app/util/AbsolutelyPositionedComponent";
 
 interface Props {
     gates: Gate[],
@@ -25,19 +26,13 @@ const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
             ref={dropRef}
         > {
             gates.map(gate => (
-                <span
-                    style={{
-                        position: 'absolute',
-                        left: gate.x,
-                        top: gate.y
-                    }}
+                <AbsolutelyPositionedComponent
+                    key={gate.uuid}
+                    x={gate.x}
+                    y={gate.y}
                 >
-                    <GateView
-                        key={gate.uuid}
-                        specification={gate.specification}
-                    />
-                </span>
-
+                    <GateView specification={gate.specification}/>
+                </AbsolutelyPositionedComponent>
             ))
         } </div>
     );

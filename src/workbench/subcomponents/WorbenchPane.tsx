@@ -11,7 +11,7 @@ interface Props {
 }
 
 const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
-    const [dropRef] = useRelativeDropPosition<SpecificationDragItem, void, {}>({
+    const [, dropRef] = useRelativeDropPosition<SpecificationDragItem, void, {}>({
         accept: 'specification',
 
         drop(item, monitor, dropPos) {

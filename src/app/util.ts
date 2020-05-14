@@ -1,17 +1,18 @@
 import {DragObjectWithType, DropTargetMonitor, useDrop, XYCoord} from "react-dnd";
-import {useRef} from "react";
+import React, {useRef} from "react";
 import {DropTargetHookSpec} from "react-dnd/lib/interfaces";
 
-type RelativeDropCallback<DragObject extends DragObjectWithType, DropResult, CollectedProps> =
+export type RelativeDropCallback<DragObject extends DragObjectWithType, DropResult, CollectedProps> =
     (item: DragObject, monitor: DropTargetMonitor, relativeDropPosition: XYCoord) => DropResult | undefined;
 
-export type RelativeDropTargetHookSpec<DragObject extends DragObjectWithType, DropResult, CollectedProps> =
-    {
-        [K in keyof DropTargetHookSpec<DragObject, DropResult, CollectedProps>]:
-        K extends 'drop' ?
-            RelativeDropCallback<DragObject, DropResult, CollectedProps> :
-            DropTargetHookSpec<DragObject, DropResult, CollectedProps>[K]
-    }
+export type RelativeDropTargetHookSpec<DragObject extends DragObjectWithType, DropResult, CollectedProps> = {
+    [K in keyof DropTargetHookSpec<DragObject, DropResult, CollectedProps>]:
+    K extends 'drop' ?
+        RelativeDropCallback<DragObject, DropResult, CollectedProps> :
+        DropTargetHookSpec<DragObject, DropResult, CollectedProps>[K]
+}
+
+export type ConnectRelativeDropTarget = (ref: HTMLElement | null) => React.ReactElement | null;
 
 /**
  * This hook acts like useDrop, except the drop function gets passed two additional parameters
@@ -22,11 +23,14 @@ export type RelativeDropTargetHookSpec<DragObject extends DragObjectWithType, Dr
  * behave as a drop location.
  */
 export function useRelativeDropPosition<DragObject extends DragObjectWithType, DropResult, CollectedProps>
-(spec: RelativeDropTargetHookSpec<DragObject, DropResult, CollectedProps>) {
+(spec: RelativeDropTargetHookSpec<DragObject, DropResult, CollectedProps>):
+    [CollectedProps, ConnectRelativeDropTarget] {
+
     const componentRef = useRef<HTMLElement>();
 
-    const [, dropCallback] = useDrop({
+    const [collectedProps, dropConnector] = useDrop<DragObject, DropResult, CollectedProps>({
         ...spec,
+
         drop(item, monitor) {
             const component = componentRef.current;
             if (component === undefined)
@@ -46,14 +50,14 @@ export function useRelativeDropPosition<DragObject extends DragObjectWithType, D
         }
     });
 
-    const combinedRef = (ref: HTMLElement | null) => {
+    const combinedRef: ConnectRelativeDropTarget = ref => {
         if (ref === null)
             componentRef.current = undefined;
         else
             componentRef.current = ref;
 
-        dropCallback(ref);
+        return dropConnector(ref);
     };
 
-    return [combinedRef];
+    return [collectedProps, combinedRef];
 }

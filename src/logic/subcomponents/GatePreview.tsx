@@ -1,13 +1,30 @@
+import "./Gate.css";
+
 import React from "react";
-import {SpecificationDragItem} from "../types";
-import GateView from "./GateView";
+import {Specification} from "../types";
+import GateIO from "./GateIO";
 
 interface Props {
-    item: SpecificationDragItem
+    specification: Specification
 }
 
-const GatePreview: React.FunctionComponent<Props> = ({item}) => (
-    <GateView specification={item.specification}/>
-);
+const GatePreview = React.forwardRef<HTMLDivElement, Props>(({specification}, forwardRef) => (
+    <div className="gate" ref={forwardRef}>
+        <div className="gate-outputs">
+            <GateIO ioType='output'/>
+            <GateIO ioType='output'/>
+        </div>
+
+        <div className="gate-body">
+            {specification.name}
+        </div>
+
+        <div className="gate-inputs">
+            <GateIO ioType='input'/>
+            <GateIO ioType='input'/>
+            <GateIO ioType='input'/>
+        </div>
+    </div>
+));
 
 export default GatePreview;

@@ -1,8 +1,8 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
-import GateView from "../../logic/subcomponents/GateView";
-import {getEmptyImage} from "react-dnd-html5-backend";
+import GatePreview from "../../logic/subcomponents/GatePreview";
+import InvisibleDiv from "../../app/util/InvisibleDiv";
 
 interface Props {
     specification: Specification
@@ -16,16 +16,13 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
         }
     });
 
-    useEffect(() => {
-        previewConnector(getEmptyImage(), {captureDraggingState: true})
-    }, [previewConnector]);
-
     return (
         <div
             className='browser-specification-card'
         >
             <div>{specification.name}</div>
-            <GateView ref={dragConnector} specification={specification}/>
+            <GatePreview ref={dragConnector} specification={specification}/>
+            <InvisibleDiv ref={previewConnector}/>
         </div>
     );
 };

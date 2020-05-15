@@ -35,8 +35,13 @@ html, body, #root {
 
   .workbench {
     flex-grow: 1;
-    position: relative;
-    overflow: scroll;
     background-color: antiquewhite;
+    position: relative;
+
+    .gates {
+      @include useAllAvailableSpace;
+      overflow: scroll;
+      position: relative;
+    }
   }
 }

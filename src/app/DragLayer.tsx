@@ -1,7 +1,7 @@
 import React, {CSSProperties} from "react";
 import {useDragLayer, XYCoord} from "react-dnd";
 import GatePreview from "../logic/subcomponents/GatePreview";
-import {SpecificationDragItem} from "../logic/types";
+import {isSpecificationDragItem} from "../logic/types";
 
 function getStyle(position: XYCoord): CSSProperties {
     const translate = `translate(${position.x}px, ${position.y}px)`;
@@ -15,32 +15,34 @@ function getStyle(position: XYCoord): CSSProperties {
     });
 }
 
-function getView(itemType: string | symbol | null, item: unknown) {
-    if (itemType === 'specification')
-        return (
-            <GatePreview item={item as SpecificationDragItem}/>
-        );
+function getPreview(item: unknown) {
+    if (isSpecificationDragItem(item))
+        return <GatePreview specification={item.specification}/>;
 
     return null;
 }
 
 const DragLayer: React.FunctionComponent<{}> = () => {
     const {
-        itemType,
         item,
         position
-    } = useDragLayer(monitor => ({
-        itemType: monitor.getItemType(),
-        item: monitor.getItem(),
-        position: monitor.getSourceClientOffset()
-    }));
+    } = useDragLayer(
+        monitor => ({
+            item: monitor.getItem(),
+            position: monitor.getSourceClientOffset()
+        })
+    );
 
     if (position == null)
         return null;
 
+    const preview = getPreview(item);
+    if (preview === null)
+        return null;
+
     return (
         <span style={getStyle(position)}>
-            {getView(itemType, item)}
+            {preview}
         </span>
     );
 };

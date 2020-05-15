@@ -8,7 +8,7 @@ interface Props {
     gate: Gate
 }
 
-const GateView: React.FunctionComponent<Props> = ({gate}) => (
+const LinkableGate: React.FunctionComponent<Props> = ({gate}) => (
     <div className="gate">
         <div className="gate-outputs">
             <LinkableGateIO ioType='output'/>
@@ -27,4 +27,4 @@ const GateView: React.FunctionComponent<Props> = ({gate}) => (
     </div>
 );
 
-export default GateView;
+export default LinkableGate;

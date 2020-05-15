@@ -1,7 +1,7 @@
 import React from "react";
 import {Gate} from "../types";
 import AbsolutelyPositionedComponent from "../../app/util/AbsolutelyPositionedComponent";
-import GateView from "./GateView";
+import LinkableGate from "./LinkableGate";
 
 interface Props {
     gates: Gate[];
@@ -15,7 +15,7 @@ const Gates = React.forwardRef<HTMLDivElement, Props>(({gates}, forwardRef) => (
                 x={gate.x}
                 y={gate.y}
             >
-                <GateView gate={gate}/>
+                <LinkableGate gate={gate}/>
             </AbsolutelyPositionedComponent>
         ))
     } </div>

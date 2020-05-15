@@ -8,7 +8,7 @@ interface Props {
     specification: Specification
 }
 
-const GatePreview = React.forwardRef<HTMLDivElement, Props>(({specification}, forwardRef) => (
+const GateView = React.forwardRef<HTMLDivElement, Props>(({specification}, forwardRef) => (
     <div className="gate" ref={forwardRef}>
         <div className="gate-outputs">
             <GateIO ioType='output'/>
@@ -27,4 +27,4 @@ const GatePreview = React.forwardRef<HTMLDivElement, Props>(({specification}, fo
     </div>
 ));
 
-export default GatePreview;
+export default GateView;

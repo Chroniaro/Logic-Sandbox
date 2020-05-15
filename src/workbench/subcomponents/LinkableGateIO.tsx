@@ -1,7 +1,7 @@
 import React from "react";
 import {useDrag} from "react-dnd";
 import GateIO, {IOType} from "../../logic/subcomponents/GateIO";
-import InvisibleDiv from "../../app/util/InvisibleDiv";
+import useHiddenPreview from "../../app/util/useHiddenPreview";
 
 interface Props {
     ioType: IOType
@@ -14,14 +14,13 @@ const LinkableGateIO: React.FunctionComponent<Props> = ({ioType}) => {
         }
     });
 
+    useHiddenPreview(previewConnector);
+
     return (
-        <>
-            <GateIO
-                ioType={ioType}
-                ref={dragConnector}
-            />
-            <InvisibleDiv ref={previewConnector}/>
-        </>
+        <GateIO
+            ioType={ioType}
+            ref={dragConnector}
+        />
     );
 };
 

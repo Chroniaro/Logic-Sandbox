@@ -1,8 +1,8 @@
 import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
-import GatePreview from "../../logic/subcomponents/GatePreview";
-import InvisibleDiv from "../../app/util/InvisibleDiv";
+import GateView from "../../logic/subcomponents/GateView";
+import useHiddenPreview from "../../app/util/useHiddenPreview";
 
 interface Props {
     specification: Specification
@@ -16,13 +16,14 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
         }
     });
 
+    useHiddenPreview(previewConnector);
+
     return (
         <div
             className='browser-specification-card'
         >
             <div>{specification.name}</div>
-            <GatePreview ref={dragConnector} specification={specification}/>
-            <InvisibleDiv ref={previewConnector}/>
+            <GateView ref={dragConnector} specification={specification}/>
         </div>
     );
 };

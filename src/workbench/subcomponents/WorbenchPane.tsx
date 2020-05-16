@@ -1,10 +1,10 @@
 import React from "react";
 import {Gate} from "../types";
 import {Specification, SpecificationDragItem} from "../../logic/types";
-import LinkageDragLayer from "./LinkageDragLayer";
 import {DropTargetHookSpec, useDrop} from "react-dnd";
-import Gates from "./Gates";
 import {CoordinateConverter, useRelativeCoordinateFrame} from "../../app/util/useRelativeCoordinateFrame";
+import LogicGateSchematic from "../../schematics/LogicGateSchematic";
+import {StandardGate} from "../../schematics/StandardGateRenderer";
 
 type NewGateActionCreator = (specification: Specification, x: number, y: number) => void;
 
@@ -39,13 +39,54 @@ const WorkbenchPane: React.FunctionComponent<Props> = ({gates, newGate}) => {
     const dropSpec = getDropConnectorSpec(newGate, relativeCoordinates);
     const [, dropConnector] = useDrop(dropSpec);
 
+    const firstGate: StandardGate = {
+        type: 'standard',
+        location: {x: 0, y: 0},
+        data: {
+            name: 'My Gate',
+            numInputs: 3,
+            numOutputs: 2
+        }
+    };
+
+    const secondGate: StandardGate = {
+        type: 'standard',
+        location: {x: 30, y: 50},
+        data: {
+            name: 'My Other Gate',
+            numInputs: 3,
+            numOutputs: 2
+        }
+    };
+
+    const linkage = {
+        type: 'standard',
+        from: {
+            gateId: '0',
+            positionOnGate: {x: 5, y: 5}
+        },
+        to: {
+            gateId: '1',
+            positionOnGate: {x: 5, y: 5}
+        }
+    };
+
     return (
         <div
             className='workbench'
             ref={dropConnector}
         >
-            <LinkageDragLayer relativeCoordinates={relativeCoordinates}/>
-            <Gates gates={gates} ref={coordinateConnector}/>
+            <LogicGateSchematic
+                schematic={{
+                    gates: {
+                        '0': firstGate,
+                        '1': secondGate
+                    },
+                    linkages: [
+                        linkage
+                    ]
+                }}
+            />
         </div>
     );
 };

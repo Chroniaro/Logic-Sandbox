@@ -1,7 +1,6 @@
 import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
-import GateView from "../../logic/subcomponents/GateView";
 import useHiddenPreview from "../../app/util/useHiddenPreview";
 
 interface Props {
@@ -23,7 +22,6 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
             className='browser-specification-card'
         >
             <div>{specification.name}</div>
-            <GateView ref={dragConnector} specification={specification}/>
         </div>
     );
 };

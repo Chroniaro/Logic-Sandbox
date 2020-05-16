@@ -1,7 +1,7 @@
 import {RefObject, useRef} from "react";
-import {XYCoord} from "react-dnd";
+import {Point} from "./types";
 
-export type CoordinateConverter = (point: XYCoord) => XYCoord | null;
+export type CoordinateConverter = (point: Point) => Point | null;
 
 export function useRelativeCoordinateFrame<Element extends HTMLElement>(): [RefObject<Element>, CoordinateConverter] {
     const ref = useRef<Element>(null);

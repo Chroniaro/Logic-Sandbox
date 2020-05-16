@@ -1,9 +1,9 @@
 import React, {CSSProperties} from "react";
-import {useDragLayer, XYCoord} from "react-dnd";
-import GateView from "../logic/subcomponents/GateView";
+import {useDragLayer} from "react-dnd";
 import {isSpecificationDragItem} from "../logic/types";
+import {Point} from "./util/types";
 
-function getStyle(position: XYCoord): CSSProperties {
+function getStyle(position: Point): CSSProperties {
     const translate = `translate(${position.x}px, ${position.y}px)`;
 
     return ({
@@ -17,7 +17,7 @@ function getStyle(position: XYCoord): CSSProperties {
 
 function getPreview(item: unknown) {
     if (isSpecificationDragItem(item))
-        return <GateView specification={item.specification}/>;
+        return <p>foo</p>;
 
     return null;
 }

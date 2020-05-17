@@ -1,19 +1,13 @@
-import React, {useContext, useEffect, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import Schematic from "./Schematic";
-import SchematicRenderContext from "./SchematicRenderContext";
-import StandardGateRenderer from "./StandardGateRenderer";
-import StandardLinkageRenderer from "./StandardLinkageRenderer";
-
-const SchematicContext = React.createContext<SchematicRenderContext | null>(null);
+import {useSchematicRenderContext} from "./SchematicRenderContextProvider";
 
 interface Props {
     schematic: Schematic;
 }
 
 const LogicGateSchematic: React.FunctionComponent<Props> = ({schematic}) => {
-    const schematicContext = useContext(SchematicContext);
-    if (schematicContext === null)
-        throw Error("A SchematicRenderContext must be provided to render schematics.");
+    const schematicContext = useSchematicRenderContext();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -23,45 +17,18 @@ const LogicGateSchematic: React.FunctionComponent<Props> = ({schematic}) => {
             if (canvas === null)
                 throw Error("Canvas ref is null.");
 
-            const graphics = canvas.getContext('2d');
-            if (graphics === null)
-                throw Error("Canvas graphics context is null.");
-
-            schematicContext.render(schematic, graphics);
-        },
-        [canvasRef, schematicContext, schematic]
+            schematicContext.render(schematic, canvas);
+        }
     );
 
     return (
-        <canvas className='logic-gate-canvas' ref={canvasRef}/>
+        <canvas
+            className='logic-gate-canvas'
+            ref={canvasRef}
+            height={0}
+            width={0}
+        />
     );
 };
 
 export default LogicGateSchematic;
-
-interface ContextProps {
-    context?: SchematicRenderContext;
-}
-
-export const SchematicRenderContextProvider: React.FunctionComponent<ContextProps> = ({context, children}) => {
-    let value = context;
-    if (value === undefined)
-        value = getStandardRenderContext();
-
-    return (
-        <SchematicContext.Provider value={value}>
-            {children}
-        </SchematicContext.Provider>
-    );
-};
-
-export function getStandardRenderContext() {
-    return new SchematicRenderContext(
-        {
-            'standard': new StandardGateRenderer()
-        },
-        {
-            'standard': new StandardLinkageRenderer()
-        }
-    );
-}

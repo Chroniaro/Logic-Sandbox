@@ -1,10 +1,12 @@
 import Schematic, {Gate, GateWithType, LinkageWithType} from "./Schematic";
-import {Rectangle} from "../app/util/types";
+import {enclosingRectangle, Rectangle} from "../app/util/geometry";
 
 export type GraphicsContext = CanvasRenderingContext2D;
 
 export interface GateRenderer<T extends string> {
-    render(gate: GateWithType<T, any>, graphics: GraphicsContext): Rectangle;
+    measure(gate: GateWithType<T, any>): Rectangle;
+
+    render(gate: GateWithType<T, any>, graphics: GraphicsContext): void;
 }
 
 export type GateBoundaries = { [uuid: string]: Rectangle };
@@ -14,11 +16,11 @@ export interface LinkageRenderer<T extends string> {
         linkage: LinkageWithType<T>,
         gates: { [uuid: string]: Gate },
         graphics: GraphicsContext,
-        gateBoundaries: GateBoundaries,
+        metrics: SchematicMetrics,
     ): void;
 }
 
-export interface SchematicRenderResults {
+export interface SchematicMetrics {
     boundingRect: Rectangle,
     gateBoundaries: GateBoundaries
 }
@@ -32,18 +34,45 @@ export default class SchematicRenderContext {
         Object.freeze(linkageRenderers);
     };
 
-    render(schematic: Schematic, graphics: GraphicsContext): SchematicRenderResults {
-        let boundingRect: Rectangle | null = null;
-
+    measure(schematic: Schematic): SchematicMetrics {
         let gateBoundaries: GateBoundaries = {};
-        for (const [uuid, gate] of Object.entries(schematic.gates)) {
-            const renderer = this.gateRenderers[gate.type];
-            if (renderer === undefined)
-                throw Error("No gate renderer found for type " + gate.type);
 
-            const gateBoundingRect = renderer.render(gate, graphics);
-            gateBoundaries[uuid] = gateBoundingRect;
-            boundingRect = minimumEnclosingRect(boundingRect, gateBoundingRect);
+        for (const [uuid, gate] of Object.entries(schematic.gates)) {
+            const renderer = this.getGateRenderer(gate.type);
+            gateBoundaries[uuid] = renderer.measure(gate);
+        }
+
+        const boundingRect = enclosingRectangle(...Object.values(gateBoundaries));
+
+        return {
+            boundingRect,
+            gateBoundaries
+        }
+    }
+
+    render(schematic: Schematic, canvas: HTMLCanvasElement): void {
+        const graphics = canvas.getContext('2d');
+        if (graphics === null)
+            throw Error("Canvas graphics context is null.");
+
+        const metrics = this.measure(schematic);
+
+        canvas.width = metrics.boundingRect.width;
+        canvas.height = metrics.boundingRect.height;
+
+        graphics.clearRect(0, 0, canvas.width, canvas.height);
+
+        const {gateBoundaries, boundingRect} = metrics;
+
+        graphics.save();
+        graphics.translate(-boundingRect.x, -boundingRect.y);
+
+        for (const [uuid, gate] of Object.entries(schematic.gates)) {
+            const boundary = gateBoundaries[uuid];
+            graphics.save();
+            graphics.rect(boundary.x, boundary.y, boundary.width, boundary.height);
+            this.getGateRenderer(gate.type).render(gate, graphics);
+            graphics.restore();
         }
 
         for (const linkage of Object.values(schematic.linkages)) {
@@ -51,51 +80,18 @@ export default class SchematicRenderContext {
             if (renderer === undefined)
                 throw Error("No linkage renderer found for type " + linkage.type);
 
-            renderer.render(linkage, schematic.gates, graphics, gateBoundaries);
+            renderer.render(linkage, schematic.gates, graphics, metrics);
         }
 
-        if (boundingRect === null)
-            boundingRect = ZERO_RECTANGLE;
-
-        return {
-            boundingRect,
-            gateBoundaries
-        };
+        graphics.restore();
     }
-}
 
-const ZERO_RECTANGLE = {
-    position: {x: 0, y: 0},
-    width: 0,
-    height: 0,
-};
+    private getGateRenderer(type: string) {
+        const renderer = this.gateRenderers[type];
 
-function minimumEnclosingRect(rect1: Rectangle | null, rect2: Rectangle): Rectangle {
-    if (rect1 === null)
-        return rect2;
+        if (renderer === undefined)
+            throw Error("No gate renderer found for type " + type);
 
-    let xs = [
-        rect1.position.x,
-        rect1.position.x + rect1.width,
-        rect2.position.x,
-        rect2.position.x + rect2.width,
-    ];
-
-    let ys = [
-        rect1.position.y,
-        rect1.position.y + rect1.height,
-        rect2.position.y,
-        rect2.position.y + rect2.height,
-    ];
-
-    let x1 = Math.min(...xs);
-    let y1 = Math.min(...ys);
-    let x2 = Math.max(...xs);
-    let y2 = Math.max(...ys);
-
-    return {
-        position: {x: x1, y: y1},
-        width: x2 - x1,
-        height: y2 - y1
+        return renderer;
     }
 }

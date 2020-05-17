@@ -2,6 +2,8 @@ import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
 import useHiddenPreview from "../../app/util/useHiddenPreview";
+import LogicGateSchematic from "../../schematics/LogicGateSchematic";
+import {getPreviewSchematic} from "../../logic/schematicBindings";
 
 interface Props {
     specification: Specification
@@ -22,6 +24,9 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
             className='browser-specification-card'
         >
             <div>{specification.name}</div>
+            <span ref={dragConnector} className='draggable'>
+                <LogicGateSchematic schematic={getPreviewSchematic(specification)}/>
+            </span>
         </div>
     );
 };

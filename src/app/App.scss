@@ -24,24 +24,26 @@ html, body, #root {
 
   .browser {
     flex-grow: 1;
-    max-width: 300px;
+
+    min-width: 2in;
+    max-width: 3in;
+
     background-color: lavender;
     overflow: scroll;
 
     .browser-specification-card {
       border: 1px solid darkblue;
+
+      .draggable {
+        display: inline-block;
+      }
     }
   }
 
   .workbench {
-    flex-grow: 1;
+    flex-grow: 4;
     background-color: antiquewhite;
     position: relative;
-
-    .gates {
-      @include useAllAvailableSpace;
-      overflow: scroll;
-      position: relative;
-    }
+    overflow: scroll;
   }
 }

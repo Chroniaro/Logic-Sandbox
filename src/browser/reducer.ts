@@ -15,7 +15,7 @@ export default createReducer<State>(
             .addCase(newSpecification, (state, action) => {
                 state.specifications.push({
                     uuid: action.payload.uuid,
-                    name: "New Specification"
+                    name: "New Spec"
                 });
             })
 );

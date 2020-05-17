@@ -1,7 +1,9 @@
 import React, {CSSProperties} from "react";
 import {useDragLayer} from "react-dnd";
 import {isSpecificationDragItem} from "../logic/types";
-import {Point} from "./util/types";
+import {Point} from "./util/geometry";
+import LogicGateSchematic from "../schematics/LogicGateSchematic";
+import {getPreviewSchematic} from "../logic/schematicBindings";
 
 function getStyle(position: Point): CSSProperties {
     const translate = `translate(${position.x}px, ${position.y}px)`;
@@ -11,13 +13,14 @@ function getStyle(position: Point): CSSProperties {
         zIndex: 100, // make preview appear on top of the workbench
         pointerEvents: 'none', // prevent preview from interfering with drag
         transform: translate, // better performance than using top and left
-        WebkitTransform: translate // who knows if this works on anything other than Chrome, but might as well try
+        WebkitTransform: translate, // who knows if this works on anything other than Chrome, but might as well try
+        display: "inline-block",
     });
 }
 
 function getPreview(item: unknown) {
     if (isSpecificationDragItem(item))
-        return <p>foo</p>;
+        return <LogicGateSchematic schematic={getPreviewSchematic(item.specification)}/>;
 
     return null;
 }

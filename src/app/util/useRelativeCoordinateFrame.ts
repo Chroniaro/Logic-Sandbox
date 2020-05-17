@@ -1,5 +1,5 @@
 import {RefObject, useRef} from "react";
-import {Point} from "./types";
+import {Point} from "./geometry";
 
 export type CoordinateConverter = (point: Point) => Point | null;
 

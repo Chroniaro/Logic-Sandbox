@@ -1,8 +1,8 @@
-import {Point} from "../app/util/types";
+import {Point} from "../app/util/geometry";
 
 export interface Gate {
     type: string;
-    location: Point;
+    position: Point;
     data: any;
 }
 

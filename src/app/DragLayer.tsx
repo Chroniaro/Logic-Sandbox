@@ -24,7 +24,7 @@ function getPreview(item: unknown) {
     return null;
 }
 
-const DragLayer: React.FunctionComponent<{}> = () => {
+const DragLayer: React.FunctionComponent = () => {
     const {
         item,
         position

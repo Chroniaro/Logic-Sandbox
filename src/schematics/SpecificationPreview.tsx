@@ -1,8 +1,8 @@
 import React, {useMemo} from "react";
 import {Specification} from "../logic/types";
 import LogicGateSchematic from "./LogicGateSchematic";
-import Schematic from "./Schematic";
-import {StandardGate} from "./StandardGateRenderer";
+import {Schematic} from "./schematic";
+import {StandardGate} from "./standardGate";
 
 interface Props {
     specification: Specification;
@@ -25,8 +25,8 @@ export default SpecificationPreview;
 function getPreviewSchematic(specification: Specification): Schematic {
     const previewGate: StandardGate = {
         type: "standard",
-        position: {x: 0, y: 0},
         data: {
+            position: {x: 0, y: 0},
             name: specification.name,
             numInputs: 3,
             numOutputs: 2,

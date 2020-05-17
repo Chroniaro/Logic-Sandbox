@@ -52,3 +52,8 @@ export function center(rectangle: Rectangle) {
         y: rectangle.y + rectangle.height / 2,
     }
 }
+
+// useful for calling library functions involving rectangles
+export function rectangleToList(rectangle: Rectangle): [number, number, number, number] {
+    return [rectangle.x, rectangle.y, rectangle.width, rectangle.height];
+}

@@ -8,24 +8,21 @@ import configureAppStore from "./configureAppStore";
 import Browser from "../browser/Browser";
 import Workbench from "../workbench/Workbench";
 import DragLayer from "./DragLayer";
-import SchematicRenderContextProvider from "../schematics/SchematicRenderContextProvider";
 
 const App: React.FunctionComponent = () => {
     const store = configureAppStore(undefined);
 
     return (
         <DndProvider backend={Backend}>
-            <Provider store={store}>
-                <SchematicRenderContextProvider>
-                    <DragLayer/>
+            <DragLayer/>
 
-                    <div className="app">
-                        <div className="work-area">
-                            <Browser/>
-                            <Workbench/>
-                        </div>
+            <Provider store={store}>
+                <div className="app">
+                    <div className="work-area">
+                        <Browser/>
+                        <Workbench/>
                     </div>
-                </SchematicRenderContextProvider>
+                </div>
             </Provider>
         </DndProvider>
     );

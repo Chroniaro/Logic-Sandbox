@@ -1,14 +1,11 @@
 import React, {useEffect, useRef} from "react";
-import Schematic from "./Schematic";
-import {useSchematicRenderContext} from "./SchematicRenderContextProvider";
+import {renderSchematicToCanvas, Schematic} from "./schematic";
 
 interface Props {
     schematic: Schematic;
 }
 
 const LogicGateSchematic: React.FunctionComponent<Props> = ({schematic}) => {
-    const schematicContext = useSchematicRenderContext();
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(
@@ -17,16 +14,16 @@ const LogicGateSchematic: React.FunctionComponent<Props> = ({schematic}) => {
             if (canvas === null)
                 throw Error("Canvas ref is null.");
 
-            schematicContext.render(schematic, canvas);
+            renderSchematicToCanvas(canvas, schematic);
         },
-        [schematicContext, schematic]
+        [schematic]
     );
 
     return (
         <canvas
             className='logic-gate-canvas'
             ref={canvasRef}
-            height={0}
+            height={0} // makes canvas invisible until effect takes place
             width={0}
         />
     );

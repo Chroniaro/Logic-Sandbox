@@ -1,7 +1,7 @@
 import React, {useMemo} from "react";
 import {Specification} from "../logic/types";
-import LogicGateSchematic from "./LogicGateSchematic";
-import {Schematic} from "./schematic";
+import SchematicLayoutView from "./SchematicLayoutView";
+import {getSchematicLayout, Schematic} from "./schematic";
 import {StandardGate} from "./standardGate";
 
 interface Props {
@@ -10,13 +10,15 @@ interface Props {
 
 const SpecificationPreview: React.FunctionComponent<Props> = ({specification}) => {
     // prevent unnecessary re-renders
-    const preview = useMemo(
-        () => getPreviewSchematic(specification),
+    const previewLayout = useMemo(
+        () => getSchematicLayout(
+            getPreviewSchematic(specification)
+        ),
         [specification]
     );
 
     return (
-        <LogicGateSchematic schematic={preview}/>
+        <SchematicLayoutView schematicLayout={previewLayout}/>
     );
 };
 

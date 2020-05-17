@@ -2,7 +2,8 @@ import {Rectangle} from "../app/util/geometry";
 
 export const styleOptions = {
     fontSize: 16,
-    charWidthRatio: 0.65,
+    font: 'Courier',
+    charWidthRatio: 0.6, // String sizes are estimated, and then the actual sizes are stretched to fit the estimate
     ioSize: 16,
     textMargin: 5,
     outerMargin: 3,

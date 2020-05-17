@@ -64,15 +64,3 @@ function renderGate(graphics: CanvasRenderingContext2D, layout: GateLayout) {
 
     graphics.restore();
 }
-
-export function renderSchematicToCanvas(canvas: HTMLCanvasElement, schematic: Schematic) {
-    const graphics = canvas.getContext('2d');
-    if (graphics === null)
-        throw Error("Cannot create 2D graphics context for canvas.");
-
-    const layout = getSchematicLayout(schematic);
-    canvas.width = layout.outerBoundary.width;
-    canvas.height = layout.outerBoundary.height;
-
-    renderSchematic(graphics, layout, {x: 0, y: 0});
-}

@@ -96,6 +96,7 @@ export function renderStandardGate(graphics: CanvasRenderingContext2D, layout: S
         borderThickness,
         cornerRadius,
         fontSize,
+        font,
     } = styleOptions;
 
     const {
@@ -114,7 +115,7 @@ export function renderStandardGate(graphics: CanvasRenderingContext2D, layout: S
     graphics.stroke();
 
     graphics.fillStyle = "black";
-    graphics.font = fontSize + "px Arial";
+    graphics.font = fontSize + "px " + font;
     fillText(graphics, nameRegion, name);
 
     graphics.fillStyle = "lightblue";

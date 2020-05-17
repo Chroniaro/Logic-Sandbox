@@ -18,7 +18,8 @@ const LogicGateSchematic: React.FunctionComponent<Props> = ({schematic}) => {
                 throw Error("Canvas ref is null.");
 
             schematicContext.render(schematic, canvas);
-        }
+        },
+        [schematicContext, schematic]
     );
 
     return (

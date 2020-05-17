@@ -2,8 +2,7 @@ import React, {CSSProperties} from "react";
 import {useDragLayer} from "react-dnd";
 import {isSpecificationDragItem} from "../logic/types";
 import {Point} from "./util/geometry";
-import LogicGateSchematic from "../schematics/LogicGateSchematic";
-import {getPreviewSchematic} from "../logic/schematicBindings";
+import SpecificationPreview from "../schematics/SpecificationPreview";
 
 function getStyle(position: Point): CSSProperties {
     const translate = `translate(${position.x}px, ${position.y}px)`;
@@ -20,7 +19,7 @@ function getStyle(position: Point): CSSProperties {
 
 function getPreview(item: unknown) {
     if (isSpecificationDragItem(item))
-        return <LogicGateSchematic schematic={getPreviewSchematic(item.specification)}/>;
+        return <SpecificationPreview specification={item.specification}/>;
 
     return null;
 }

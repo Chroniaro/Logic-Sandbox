@@ -24,6 +24,7 @@ html, body, #root {
 
   .browser {
     flex-grow: 1;
+    flex-shrink: 0;
 
     min-width: 2in;
     max-width: 3in;
@@ -33,10 +34,6 @@ html, body, #root {
 
     .browser-specification-card {
       border: 1px solid darkblue;
-
-      .draggable {
-        display: inline-block;
-      }
     }
   }
 
@@ -46,4 +43,9 @@ html, body, #root {
     position: relative;
     overflow: scroll;
   }
+}
+
+.refHandle {
+  display: inline-block;
+  font-size: 0;
 }

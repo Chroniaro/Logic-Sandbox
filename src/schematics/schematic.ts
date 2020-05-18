@@ -8,19 +8,17 @@ export type GateLayout = StandardGateLayout;
 export type Linkage = StandardLinkage;
 
 export interface Schematic {
-    gates: { [uuid: string]: Gate };
+    gates: Gate[];
     linkages: Linkage[];
 }
 
 export interface SchematicLayout {
-    gateLayouts: { [uuid: string]: GateLayout };
+    gateLayouts: GateLayout[];
     outerBoundary: Rectangle;
 }
 
 export function getSchematicLayout(schematic: Schematic): SchematicLayout {
-    const gateLayouts: { [uuid: string]: GateLayout } = {};
-    for (const [uuid, gate] of Object.entries(schematic.gates))
-        gateLayouts[uuid] = getStandardGateLayout(gate);
+    const gateLayouts = schematic.gates.map(getGateLayout);
 
     const outerBoundary = enclosingRectangle(
         ...Object.values(gateLayouts)
@@ -33,16 +31,20 @@ export function getSchematicLayout(schematic: Schematic): SchematicLayout {
     }
 }
 
+function getGateLayout(gate: Gate) {
+    return getStandardGateLayout(gate);
+}
+
 export function renderSchematic(graphics: CanvasRenderingContext2D, layout: SchematicLayout, position: Point) {
     graphics.save();
 
     const boundary = layout.outerBoundary;
     graphics.translate(position.x - boundary.x, position.y - boundary.y);
-    graphics.rect(0, 0, boundary.width, boundary.height);
+    graphics.rect(...rectangleToList(boundary));
     graphics.clip();
-    graphics.clearRect(0, 0, boundary.width, boundary.height);
+    graphics.clearRect(...rectangleToList(boundary));
 
-    for (const gateLayout of Object.values(layout.gateLayouts))
+    for (const gateLayout of layout.gateLayouts)
         renderGate(graphics, gateLayout);
 
     graphics.restore();

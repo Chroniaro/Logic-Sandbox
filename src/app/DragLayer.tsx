@@ -9,11 +9,10 @@ function getStyle(position: Point): CSSProperties {
 
     return ({
         position: 'fixed', // use client coordinates
-        zIndex: 100, // make preview appear on top of the workbench
+        zIndex: 100, // the preview you are dragging should be on top of everything
         pointerEvents: 'none', // prevent preview from interfering with drag
         transform: translate, // better performance than using top and left
         WebkitTransform: translate, // who knows if this works on anything other than Chrome, but might as well try
-        display: "inline-block",
     });
 }
 
@@ -43,9 +42,9 @@ const DragLayer: React.FunctionComponent = () => {
         return null;
 
     return (
-        <span style={getStyle(position)}>
+        <div style={getStyle(position)} className='refHandle'>
             {preview}
-        </span>
+        </div>
     );
 };
 

@@ -23,9 +23,9 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
             className='browser-specification-card'
         >
             <div>{specification.name}</div>
-            <span ref={dragConnector} className='draggable'>
+            <div ref={dragConnector} className='refHandle'>
                 <SpecificationPreview specification={specification}/>
-            </span>
+            </div>
         </div>
     );
 };

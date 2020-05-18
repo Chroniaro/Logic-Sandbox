@@ -1,30 +1,27 @@
 import React, {useMemo} from "react";
-import {Specification} from "../logic/types";
-import SchematicLayoutView from "./SchematicLayoutView";
-import {getSchematicLayout, Schematic} from "./schematic";
+import {Specification} from "../../logic/types";
+import {getSchematicLayout, SchematicLayout} from "../../schematics/schematic";
+import FullSchematic from "../../schematics/FullSchematic";
 
 interface Props {
     specification: Specification;
 }
 
 const SpecificationPreview: React.FunctionComponent<Props> = ({specification}) => {
-    // prevent unnecessary re-renders
     const previewLayout = useMemo(
-        () => getSchematicLayout(
-            getPreviewSchematic(specification)
-        ),
+        () => getPreviewLayout(specification),
         [specification]
     );
 
     return (
-        <SchematicLayoutView schematicLayout={previewLayout}/>
+        <FullSchematic schematicLayout={previewLayout}/>
     );
 };
 
 export default SpecificationPreview;
 
-function getPreviewSchematic(specification: Specification): Schematic {
-    return {
+function getPreviewLayout(specification: Specification): SchematicLayout {
+    return getSchematicLayout({
         gates: [
             {
                 type: "standard",
@@ -37,5 +34,5 @@ function getPreviewSchematic(specification: Specification): Schematic {
             }
         ],
         linkages: []
-    };
+    });
 }

@@ -3,10 +3,10 @@ export interface Point {
     y: number;
 }
 
-export function addPoints(point1: Point, point2: Point): Point {
+export function subtractPoints(point1: Point, point2: Point): Point {
     return {
-        x: point1.x + point2.x,
-        y: point1.y + point2.y,
+        x: point1.x - point2.x,
+        y: point1.y - point2.y,
     }
 }
 
@@ -24,6 +24,15 @@ export const ZERO_RECTANGLE: Rectangle = {
     height: 0,
 };
 
+function rectangleWithCorners(x1: number, y1: number, x2: number, y2: number) {
+    return {
+        x: x1,
+        y: y1,
+        width: x2 - x1,
+        height: y2 - y1,
+    }
+}
+
 export function enclosingRectangle(...rectangles: Rectangle[]): Rectangle {
     if (rectangles.length === 0)
         return ZERO_RECTANGLE;
@@ -33,12 +42,26 @@ export function enclosingRectangle(...rectangles: Rectangle[]): Rectangle {
     const x2 = Math.max(...rectangles.map(rect => rect.x + rect.width));
     const y2 = Math.max(...rectangles.map(rect => rect.y + rect.height));
 
-    return {
-        x: x1,
-        y: y1,
-        width: x2 - x1,
-        height: y2 - y1,
-    }
+    return rectangleWithCorners(x1, y1, x2, y2);
+}
+
+export function intersection(...rectangles: Rectangle[]): Rectangle {
+    if (rectangles.length === 0)
+        return ZERO_RECTANGLE;
+
+    const x1 = Math.max(...rectangles.map(rect => rect.x));
+    const y1 = Math.max(...rectangles.map(rect => rect.y));
+    const x2 = Math.min(...rectangles.map(rect => rect.x + rect.width));
+    const y2 = Math.min(...rectangles.map(rect => rect.y + rect.height));
+
+    if (x1 >= x2 || y1 >= y2)
+        return ZERO_RECTANGLE;
+
+    return rectangleWithCorners(x1, y1, x2, y2);
+}
+
+export function intersects(rectangle1: Rectangle, rectangle2: Rectangle) {
+    return intersection(rectangle1, rectangle2) !== ZERO_RECTANGLE;
 }
 
 export function padRectangle(rect: Rectangle, horizontalPadding: number, verticalPadding?: number) {

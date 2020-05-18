@@ -1,6 +1,6 @@
 import {getStandardGateLayout, renderStandardGate, StandardGate, StandardGateLayout} from "./standardGate";
 import {StandardLinkage} from "./standardLinkage";
-import {enclosingRectangle, Point, Rectangle, rectangleToList} from "../app/util/geometry";
+import {enclosingRectangle, intersects, Point, Rectangle, rectangleToList} from "../app/util/geometry";
 
 export type Gate = StandardGate;
 export type GateLayout = StandardGateLayout;
@@ -35,17 +35,23 @@ function getGateLayout(gate: Gate) {
     return getStandardGateLayout(gate);
 }
 
-export function renderSchematic(graphics: CanvasRenderingContext2D, layout: SchematicLayout, position: Point) {
+export function renderSchematic(graphics: CanvasRenderingContext2D, layout: SchematicLayout,
+                                viewBox?: Rectangle, position?: Point) {
+    if (viewBox === undefined)
+        viewBox = layout.outerBoundary;
+    if (position === undefined)
+        position = {x: 0, y: 0};
+
     graphics.save();
 
-    const boundary = layout.outerBoundary;
-    graphics.translate(position.x - boundary.x, position.y - boundary.y);
-    graphics.rect(...rectangleToList(boundary));
+    graphics.translate(position.x - viewBox.x, position.y - viewBox.y);
+    graphics.rect(...rectangleToList(viewBox));
     graphics.clip();
-    graphics.clearRect(...rectangleToList(boundary));
+    graphics.clearRect(...rectangleToList(viewBox));
 
     for (const gateLayout of layout.gateLayouts)
-        renderGate(graphics, gateLayout);
+        if (intersects(gateLayout.data.outerBoundary, viewBox))
+            renderGate(graphics, gateLayout);
 
     graphics.restore();
 }

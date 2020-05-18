@@ -8,16 +8,7 @@ export interface State {
 
 export default createReducer<State>(
     {
-        gates: [
-            {
-                uuid: 'foo',
-                position: {x: -50, y: 7000},
-                specification: {
-                    uuid: 'zoom',
-                    name: 'My Gate'
-                }
-            }
-        ]
+        gates: []
     },
     builder => builder
         .addCase(newGate, (state, action) => {

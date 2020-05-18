@@ -2,7 +2,7 @@ import React from "react";
 import {Specification, SpecificationDragItem} from "../../logic/types";
 import {useDrag} from "react-dnd";
 import useHiddenPreview from "../../app/util/useHiddenPreview";
-import SpecificationPreview from "../../schematics/SpecificationPreview";
+import SpecificationPreview from "./SpecificationPreview";
 
 interface Props {
     specification: Specification

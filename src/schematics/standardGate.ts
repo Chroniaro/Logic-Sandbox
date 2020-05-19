@@ -50,8 +50,8 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
     const textVerticalOffset = (bodyHeight - textHeight) / 2;
 
     const nameRegion = {
-        x: position.x + ioSize + textMargin,
-        y: position.y + textVerticalOffset,
+        x: position.x + outerMargin + ioSize + textMargin,
+        y: position.y + outerMargin + textVerticalOffset,
         width: fontSize * name.length * charWidthRatio,
         height: textHeight
     };
@@ -61,8 +61,8 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
     const inputs = [];
     for (let i = 0; i < numInputs; ++i)
         inputs[i] = {
-            x: position.x,
-            y: position.y + (bodyHeight - inputsHeight) / 2 + i * ioSize,
+            x: body.x - ioSize,
+            y: body.y + (bodyHeight - inputsHeight) / 2 + i * ioSize,
             width: ioSize,
             height: ioSize,
         };
@@ -71,7 +71,7 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
     for (let i = 0; i < numOutputs; ++i)
         outputs[i] = {
             x: body.x + body.width,
-            y: position.y + (bodyHeight - outputsHeight) / 2 + i * ioSize,
+            y: body.y + (bodyHeight - outputsHeight) / 2 + i * ioSize,
             width: ioSize,
             height: ioSize
         };

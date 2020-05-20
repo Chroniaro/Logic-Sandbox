@@ -1,17 +1,20 @@
-import React, {useCallback} from "react";
+import React, {useEffect, useRef} from "react";
 import {renderSchematic, SchematicLayout} from "./schematic";
-import {useCanvasRenderFunction} from "../app/util/util";
+import {nullCheckCanvasRefAndContext} from "../app/util/util";
 
 interface Props {
     schematicLayout: SchematicLayout;
 }
 
 const FullSchematic: React.FunctionComponent<Props> = ({schematicLayout}) => {
-    const canvasRef = useCanvasRenderFunction(
-        useCallback(
-            graphics => renderSchematic(graphics, schematicLayout),
-            [schematicLayout]
-        )
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(
+        () => {
+            const [, graphics] = nullCheckCanvasRefAndContext(canvasRef);
+            renderSchematic(graphics, schematicLayout);
+        },
+        [schematicLayout]
     );
 
     const {width, height} = schematicLayout.outerBoundary;

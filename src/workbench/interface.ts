@@ -4,6 +4,12 @@ import {v4 as uuid} from "uuid";
 import {workbenchSelector} from "../app/interface";
 import {getSchematicForGate} from "./types";
 import {getSchematicLayout, Schematic} from "../schematics/schematic";
+import {Point} from "../app/util/geometry";
+
+export const viewPositionSelector = createSelector(
+    workbenchSelector,
+    workbench => workbench.viewPosition
+);
 
 export const gatesSelector = createSelector(
     workbenchSelector,
@@ -25,6 +31,13 @@ export const schematicSelector = createSelector(
 export const schematicLayoutSelector = createSelector(
     schematicSelector,
     getSchematicLayout
+);
+
+export const viewDragged = createAction(
+    'workbench/viewDragged--minor',
+    (dragDelta: Point) => ({
+        payload: dragDelta
+    })
 );
 
 export const newGate = createAction(

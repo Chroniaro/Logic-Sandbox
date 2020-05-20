@@ -17,12 +17,13 @@ export interface Rectangle {
     height: number;
 }
 
-export const ZERO_RECTANGLE: Rectangle = {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-};
+export function moveRectangle(rectangle: Rectangle, newPosition: Point): Rectangle {
+    return {
+        ...newPosition,
+        width: rectangle.width,
+        height: rectangle.height,
+    }
+}
 
 function rectangleWithCorners(x1: number, y1: number, x2: number, y2: number) {
     return {
@@ -32,6 +33,8 @@ function rectangleWithCorners(x1: number, y1: number, x2: number, y2: number) {
         height: y2 - y1,
     }
 }
+
+export const ZERO_RECTANGLE = rectangleWithCorners(0, 0, 0, 0,);
 
 export function enclosingRectangle(...rectangles: Rectangle[]): Rectangle {
     if (rectangles.length === 0)

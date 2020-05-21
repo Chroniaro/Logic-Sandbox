@@ -3,8 +3,6 @@ import {renderSchematic, SchematicLayout} from "./schematic";
 import {moveRectangle, Point} from "../app/util/geometry";
 import {nullCheck, nullCheckCanvasRefAndContext, useHTMLEventListener} from "../app/util/util";
 
-export type ViewMoveHandler = (delta: Point) => void;
-
 interface Props {
     schematicLayout: SchematicLayout;
     viewPosition: Point;

@@ -8,27 +8,23 @@ interface DragInformation {
     position: Point,
 }
 
-export interface State {
-    dragInfo: DragInformation | null
-}
+export type State = DragInformation | null;
 
-const initialState: State = {
-    dragInfo: null
-}
+const initialState = null;
 
 export default createReducer<State>(
     initialState,
     builder => builder
         .addCase(newGateDragStart, (state, action) => {
-            state.dragInfo = action.payload;
+            return action.payload;
         })
         .addCase(newGateDragged, (state, action) => {
-            if (state.dragInfo === null)
+            if (state === null)
                 throw Error("Gate dragged when no drag started.");
 
-            state.dragInfo.position = action.payload;
+            state.position = action.payload;
         })
-        .addCase(newGateDropped, (state) => {
-            state.dragInfo = null;
+        .addCase(newGateDropped, () => {
+            return null;
         })
 );

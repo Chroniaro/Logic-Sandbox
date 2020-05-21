@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, useCallback, useRef, useState} from "react";
+import React, {MouseEventHandler, useCallback, useState} from "react";
 import SchematicViewport from "../schematics/SchematicViewport";
 import {useDispatch, useSelector} from "react-redux";
 import {mousePositionOverCanvasChanged, schematicLayoutSelector} from "./interface";
@@ -8,11 +8,7 @@ import {DraggableCore, DraggableEventHandler} from "react-draggable";
 
 const WorkbenchPane: React.FunctionComponent = () => {
     const [viewPosition, onViewDrag] = useDraggableViewPosition();
-
-    const positionRef = useRef<HTMLDivElement>(null);
-
-    const [onMouseOver, onMouseMove, onMouseOut] = useTrackMouseOverCanvas(viewPosition);
-
+    const [onMouseMove, onMouseOut] = useTrackMouseOverCanvas(viewPosition);
     const schematicLayout = useSelector(schematicLayoutSelector);
 
     return (
@@ -22,8 +18,6 @@ const WorkbenchPane: React.FunctionComponent = () => {
             >
                 <div
                     className='gates refHandle'
-                    ref={positionRef}
-                    onMouseOver={onMouseOver}
                     onMouseMove={onMouseMove}
                     onMouseOut={onMouseOut}
                 >
@@ -71,10 +65,10 @@ function useDraggableViewPosition(): [Point, DraggableEventHandler] {
     return [viewPosition, onViewDrag];
 }
 
-function useTrackMouseOverCanvas(viewPosition: Point) {
+function useTrackMouseOverCanvas(viewPosition: Point): [MouseEventHandler<HTMLElement>, MouseEventHandler<HTMLElement>] {
     const dispatch = useDispatch();
 
-    const onMouseOver: MouseEventHandler<HTMLDivElement> = useCallback(
+    const onMouseMove: MouseEventHandler<HTMLElement> = useCallback(
         (event) => {
             const positionOverCanvas = {
                 x: event.clientX - event.currentTarget.offsetLeft + viewPosition.x,
@@ -86,14 +80,12 @@ function useTrackMouseOverCanvas(viewPosition: Point) {
         [dispatch, viewPosition]
     );
 
-    const onMouseMove = onMouseOver;
-
-    const onMouseOut = useCallback(
+    const onMouseOut: MouseEventHandler<HTMLElement> = useCallback(
         () => {
             dispatch(mousePositionOverCanvasChanged(null));
         },
         [dispatch]
     )
 
-    return [onMouseOver, onMouseMove, onMouseOut];
+    return [onMouseMove, onMouseOut];
 }

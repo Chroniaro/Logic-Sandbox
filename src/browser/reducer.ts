@@ -1,13 +1,13 @@
 import specifications, {State as SpecificationsState} from "./reducers/specifications";
-import drag, {State as DragState} from "./reducers/drag";
+import dragInfo, {State as DragState} from "./reducers/dragInfo";
 import {combineReducers} from "redux";
 
 export interface State {
     specifications: SpecificationsState,
-    drag: DragState,
+    dragInfo: DragState,
 }
 
 export default combineReducers({
     specifications,
-    drag,
+    dragInfo,
 });

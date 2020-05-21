@@ -11,7 +11,7 @@ export const specificationsSelector = createSelector(
 
 export const dragInfoSelector = createSelector(
     browserSelector,
-    browser => browser.drag.dragInfo
+    browser => browser.dragInfo
 );
 
 export const newSpecification = createAction(

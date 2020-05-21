@@ -2,7 +2,7 @@ import {createAction, createSelector} from "@reduxjs/toolkit";
 import {workbenchSelector} from "../app/interface";
 import {Gate, getSchematicLayout, Schematic} from "../schematics/schematic";
 import {WorkbenchGate} from "./types";
-import {Point} from "../app/util/geometry";
+import {Point} from "../util/geometry";
 
 export const gatesSelector = createSelector(
     workbenchSelector,

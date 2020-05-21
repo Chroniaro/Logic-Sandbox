@@ -4,7 +4,7 @@ import SpecificationPreview from "./SpecificationPreview";
 import {DraggableCore, DraggableEventHandler} from "react-draggable";
 import {useDispatch} from "react-redux";
 import {newGateDragged, newGateDragStart, newGateDropped} from "../interface";
-import {Point, subtractPoints} from "../../app/util/geometry";
+import {Point, subtractPoints} from "../../util/geometry";
 
 interface Props {
     specification: Specification

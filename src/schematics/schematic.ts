@@ -5,7 +5,7 @@ import {
     StandardLinkage,
     StandardLinkageLayout
 } from "./standardLinkage";
-import {enclosingRectangle, intersects, Point, Rectangle, rectangleToList} from "../app/util/geometry";
+import {enclosingRectangle, intersects, Point, Rectangle, rectangleToList} from "../util/geometry";
 
 export type Gate = StandardGate;
 export type GateLayout = StandardGateLayout;

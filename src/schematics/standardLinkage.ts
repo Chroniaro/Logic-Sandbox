@@ -1,4 +1,4 @@
-import {Point} from "../app/util/geometry";
+import {Point} from "../util/geometry";
 import {LinkageLayout} from "./schematic";
 
 export interface StandardLinkage {

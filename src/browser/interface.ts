@@ -1,7 +1,7 @@
 import {createAction, createSelector} from "@reduxjs/toolkit";
 import {v4 as uuid} from "uuid";
 import {Specification} from "../logic/types";
-import {Point} from "../app/util/geometry";
+import {Point} from "../util/geometry";
 import {browserSelector} from "../app/interface";
 
 export const specificationsSelector = createSelector(

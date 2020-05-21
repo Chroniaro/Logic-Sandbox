@@ -2,7 +2,7 @@ import React from "react";
 import {useSelector} from "react-redux";
 import {dragInfoSelector} from "../interface";
 import SpecificationPreview from "./SpecificationPreview";
-import DragPreview from "../../app/util/DragPreview";
+import DragPreview from "../../util/DragPreview";
 
 const SpecificationDragPreview: React.FunctionComponent = () => {
     const dragInfo = useSelector(dragInfoSelector);

@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef} from "react";
 import {renderSchematic, SchematicLayout} from "./schematic";
-import {moveRectangle, Point} from "../app/util/geometry";
-import {nullCheck, nullCheckCanvasRefAndContext, useHTMLEventListener} from "../app/util/util";
+import {moveRectangle, Point} from "../util/geometry";
+import {nullCheck, nullCheckCanvasRefAndContext, useHTMLEventListener} from "../util/util";
 
 interface Props {
     schematicLayout: SchematicLayout;

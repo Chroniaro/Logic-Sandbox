@@ -1,6 +1,6 @@
 import React from "react";
 import {GateLayout} from "../../schematics/schematic";
-import {Point, Rectangle} from "../../app/util/geometry";
+import {Point, Rectangle} from "../../util/geometry";
 import IODragRegion from "./IODragRegion";
 
 interface Props {

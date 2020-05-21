@@ -7,7 +7,7 @@ import Browser from "../browser/Browser";
 import Workbench from "../workbench/Workbench";
 
 const App: React.FunctionComponent = () => {
-    const store = configureAppStore(undefined);
+    const store = configureAppStore();
 
     return (
         <Provider store={store}>

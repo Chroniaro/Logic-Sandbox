@@ -2,7 +2,7 @@ import React, {MouseEventHandler, useCallback, useState} from "react";
 import SchematicViewport from "../schematics/SchematicViewport";
 import {useDispatch, useSelector} from "react-redux";
 import {mousePositionOverCanvasChanged, schematicLayoutSelector} from "./interface";
-import {Point, subtractPoints} from "../app/util/geometry";
+import {Point, subtractPoints} from "../util/geometry";
 import GateIO from "./subcomponents/GateIO";
 import {DraggableCore, DraggableEventHandler} from "react-draggable";
 

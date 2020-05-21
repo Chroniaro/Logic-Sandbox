@@ -3,6 +3,9 @@ import reducer from "./reducer";
 
 export default function configureAppStore() {
     return configureStore({
-        reducer
+        reducer,
+        devTools: {
+            actionsBlacklist: '--minor'
+        }
     });
 }

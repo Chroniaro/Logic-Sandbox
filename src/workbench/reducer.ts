@@ -1,7 +1,7 @@
 import {createReducer} from "@reduxjs/toolkit";
 import {mousePositionOverCanvasChanged} from "./interface";
 import {WorkbenchGate, WorkbenchLinkage} from "./types";
-import {Point, subtractPoints} from "../app/util/geometry";
+import {Point, subtractPoints} from "../util/geometry";
 import {newGateDropped} from "../browser/interface";
 
 export interface State {

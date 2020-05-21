@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {renderSchematic, SchematicLayout} from "./schematic";
-import {nullCheckCanvasRefAndContext} from "../app/util/util";
+import {nullCheckCanvasRefAndContext} from "../util/util";
 
 interface Props {
     schematicLayout: SchematicLayout;

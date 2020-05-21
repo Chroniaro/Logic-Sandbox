@@ -1,4 +1,4 @@
-import {Rectangle} from "../app/util/geometry";
+import {Rectangle} from "../util/geometry";
 
 export const styleOptions = {
     fontSize: 16,

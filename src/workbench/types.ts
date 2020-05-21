@@ -1,5 +1,5 @@
 import {Specification} from "../logic/types";
-import {Point} from "../app/util/geometry";
+import {Point} from "../util/geometry";
 
 export interface WorkbenchGate {
     uuid: string,

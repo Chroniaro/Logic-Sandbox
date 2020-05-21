@@ -1,4 +1,4 @@
-import {padRectangle, Point, Rectangle} from "../app/util/geometry";
+import {padRectangle, Point, Rectangle} from "../util/geometry";
 import {fillText, roundedRect, styleOptions} from "./renderUtil";
 
 export interface StandardGate {

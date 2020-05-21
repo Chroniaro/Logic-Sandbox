@@ -1,5 +1,5 @@
 import {Specification} from "../../logic/types";
-import {Point} from "../../app/util/geometry";
+import {Point} from "../../util/geometry";
 import {createReducer} from "@reduxjs/toolkit";
 import {newGateDragged, newGateDragStart, newGateDropped} from "../interface";
 

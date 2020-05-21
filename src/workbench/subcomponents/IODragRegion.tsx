@@ -1,6 +1,6 @@
 import React from "react";
-import {Point, Rectangle} from "../../app/util/geometry";
-import {getTranslateCSSProperty} from "../../app/util/util";
+import {Point, Rectangle} from "../../util/geometry";
+import {getTranslateCSSProperty} from "../../util/util";
 
 interface Props {
     region: Rectangle,

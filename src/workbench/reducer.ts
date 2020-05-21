@@ -1,29 +1,38 @@
 import {createReducer} from "@reduxjs/toolkit";
-import {newGate, viewDragged} from "./interface";
-import {WorkbenchGate} from "./types";
+import {mousePositionOverCanvasChanged} from "./interface";
+import {WorkbenchGate, WorkbenchLinkage} from "./types";
 import {Point, subtractPoints} from "../app/util/geometry";
+import {newGateDropped} from "../browser/interface";
 
 export interface State {
-    viewPosition: Point,
+    mousePositionOverCanvas: Point | null,
+    linkagePreview: WorkbenchLinkage | null,
     gates: WorkbenchGate[]
 }
 
-const initialState = {
-    viewPosition: {
-        x: 0,
-        y: 0,
-    },
-
+const initialState: State = {
+    mousePositionOverCanvas: null,
+    linkagePreview: null,
     gates: []
 };
 
 export default createReducer<State>(
     initialState,
     builder => builder
-        .addCase(newGate, (state, action) => {
-            state.gates.push(action.payload.gate);
+        .addCase(mousePositionOverCanvasChanged, (state, action) => {
+            state.mousePositionOverCanvas = action.payload;
         })
-        .addCase(viewDragged, (state, action) => {
-            state.viewPosition = subtractPoints(state.viewPosition, action.payload);
+        .addCase(newGateDropped, (state, action) => {
+            const mousePositionOverCanvas = state.mousePositionOverCanvas;
+            if (mousePositionOverCanvas !== null) {
+                const {uuid, specification, grabPosition} = action.payload;
+                const position = subtractPoints(mousePositionOverCanvas, grabPosition);
+
+                state.gates.push({
+                    uuid,
+                    specification,
+                    position,
+                });
+            }
         })
 );

@@ -1,21 +1,13 @@
-import {createReducer} from "@reduxjs/toolkit";
-import {newSpecification} from "./interface";
-import {Specification} from "../logic/types";
+import specifications, {State as SpecificationsState} from "./reducers/specifications";
+import drag, {State as DragState} from "./reducers/drag";
+import {combineReducers} from "redux";
 
 export interface State {
-    specifications: Specification[]
+    specifications: SpecificationsState,
+    drag: DragState,
 }
 
-export default createReducer<State>(
-    {
-        specifications: []
-    },
-    builder =>
-        builder
-            .addCase(newSpecification, (state, action) => {
-                state.specifications.push({
-                    uuid: action.payload.uuid,
-                    name: "New Spec"
-                });
-            })
-);
+export default combineReducers({
+    specifications,
+    drag,
+});

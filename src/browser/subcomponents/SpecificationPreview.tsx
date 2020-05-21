@@ -26,6 +26,7 @@ function getPreviewLayout(specification: Specification): SchematicLayout {
             {
                 type: "standard",
                 data: {
+                    uuid: 'preview',
                     position: {x: 0, y: 0},
                     name: specification.name,
                     numInputs: 3,

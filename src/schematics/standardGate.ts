@@ -4,6 +4,7 @@ import {fillText, roundedRect, styleOptions} from "./renderUtil";
 export interface StandardGate {
     type: 'standard';
     data: {
+        uuid: string;
         position: Point;
 
         name: string;

@@ -1,75 +1,99 @@
-import React, {useCallback, useRef} from "react";
+import React, {MouseEventHandler, useCallback, useRef, useState} from "react";
 import SchematicViewport from "../schematics/SchematicViewport";
 import {useDispatch, useSelector} from "react-redux";
-import {newGate, schematicLayoutSelector, viewDragged, viewPositionSelector} from "./interface";
-import {useDrop} from "react-dnd";
-import {SpecificationDragItem} from "../logic/types";
-import {nullCheck} from "../app/util/util";
+import {mousePositionOverCanvasChanged, schematicLayoutSelector} from "./interface";
 import {Point, subtractPoints} from "../app/util/geometry";
-import IODragRegion from "./IODragRegion";
+import GateIO from "./subcomponents/GateIO";
+import {DraggableCore, DraggableEventHandler} from "react-draggable";
 
 const WorkbenchPane: React.FunctionComponent = () => {
-    const dispatch = useDispatch();
-
-    const viewPosition = useSelector(viewPositionSelector);
-    const schematicLayout = useSelector(schematicLayoutSelector);
+    const [viewPosition, onViewDrag] = useDraggableViewPosition();
 
     const positionRef = useRef<HTMLDivElement>(null);
-    const [, dropRef] = useDrop({
-        accept: 'specification',
 
-        drop(item, monitor) {
-            const positionDiv = nullCheck(positionRef.current, "Position ref was null.");
-            const position: Point = positionDiv.getBoundingClientRect();
-            const clientDropPos = nullCheck(monitor.getSourceClientOffset(), "Drop position was null.");
-            const dropPos = subtractPoints(clientDropPos, position);
-            dispatch(newGate(
-                (item as SpecificationDragItem).specification,
-                dropPos.x + viewPosition.x,
-                dropPos.y + viewPosition.y,
-            ));
-        }
-    });
+    const [onMouseOver, onMouseMove, onMouseOut] = useTrackMouseOverCanvas(viewPosition);
 
-    const onViewMove = useCallback(
-        delta => dispatch(viewDragged(delta)),
-        [dispatch]
-    );
+    const schematicLayout = useSelector(schematicLayoutSelector);
 
     return (
-        <div
-            className='workbench'
-            ref={dropRef}
-        >
-            <div
-                className='gates refHandle'
-                ref={positionRef}
+        <div className='workbench'>
+            <DraggableCore
+                onDrag={onViewDrag}
             >
-                <SchematicViewport schematicLayout={schematicLayout} viewPosition={viewPosition}
-                                   onViewMove={onViewMove}>
-                    {
-                        schematicLayout.gateLayouts.map(
-                            gateLayout => (
-                                <>
-                                    {
-                                        gateLayout.data.inputs.map(
-                                            region => <IODragRegion region={region} viewPosition={viewPosition}/>
-                                        )
-                                    }
-                                    {
-                                        gateLayout.data.outputs.map(
-                                            region => <IODragRegion region={region} viewPosition={viewPosition}/>
-                                        )
-                                    }
-                                </>
+                <div
+                    className='gates refHandle'
+                    ref={positionRef}
+                    onMouseOver={onMouseOver}
+                    onMouseMove={onMouseMove}
+                    onMouseOut={onMouseOut}
+                >
+                    <SchematicViewport
+                        schematicLayout={schematicLayout}
+                        viewPosition={viewPosition}
+                    > {
+                        Object.entries(schematicLayout.gateLayouts).map(
+                            ([uuid, gateLayout]) => (
+                                <GateIO
+                                    key={uuid}
+                                    gateLayout={gateLayout}
+                                    viewPosition={viewPosition}
+                                />
                             )
                         )
-                    }
-                </SchematicViewport>
-
-            </div>
+                    } </SchematicViewport>
+                </div>
+            </DraggableCore>
         </div>
     );
 };
 
 export default WorkbenchPane;
+
+function useDraggableViewPosition(): [Point, DraggableEventHandler] {
+    const [viewPosition, setViewPosition] = useState({x: 0, y: 0});
+
+    const onViewDrag: DraggableEventHandler = useCallback(
+        (event, data) => {
+            setViewPosition(
+                oldViewPosition =>
+                    subtractPoints(
+                        oldViewPosition,
+                        {
+                            x: data.deltaX,
+                            y: data.deltaY,
+                        }
+                    )
+            );
+        },
+        []
+    );
+
+    return [viewPosition, onViewDrag];
+}
+
+function useTrackMouseOverCanvas(viewPosition: Point) {
+    const dispatch = useDispatch();
+
+    const onMouseOver: MouseEventHandler<HTMLDivElement> = useCallback(
+        (event) => {
+            const positionOverCanvas = {
+                x: event.clientX - event.currentTarget.offsetLeft + viewPosition.x,
+                y: event.clientY - event.currentTarget.offsetTop + viewPosition.y,
+            };
+
+            dispatch(mousePositionOverCanvasChanged(positionOverCanvas));
+        },
+        [dispatch, viewPosition]
+    );
+
+    const onMouseMove = onMouseOver;
+
+    const onMouseOut = useCallback(
+        () => {
+            dispatch(mousePositionOverCanvasChanged(null));
+        },
+        [dispatch]
+    )
+
+    return [onMouseOver, onMouseMove, onMouseOut];
+}

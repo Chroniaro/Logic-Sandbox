@@ -1,24 +1,5 @@
 import {Specification} from "../logic/types";
-import {Gate} from "../schematics/schematic";
-
-export const InputLinkageDragType = 'linkage-input';
-export const OutputLinkageDragType = 'linkage-output';
-
-export type LinkageDragType = typeof InputLinkageDragType | typeof OutputLinkageDragType;
-
-export function isLinkageDragType(type: any): type is LinkageDragType {
-    if (typeof (type) !== 'string')
-        return false;
-
-    return [
-        InputLinkageDragType,
-        OutputLinkageDragType,
-    ].includes(type);
-}
-
-export interface LinkageDraggableItem {
-    type: LinkageDragType;
-}
+import {Point} from "../app/util/geometry";
 
 export interface WorkbenchGate {
     uuid: string,
@@ -26,14 +7,7 @@ export interface WorkbenchGate {
     position: { x: number, y: number }
 }
 
-export function getSchematicForGate(gate: WorkbenchGate): Gate {
-    return {
-        type: 'standard',
-        data: {
-            position: gate.position,
-            name: gate.specification.name,
-            numInputs: 3,
-            numOutputs: 2,
-        }
-    }
+export interface WorkbenchLinkage {
+    from: Point,
+    to: Point,
 }

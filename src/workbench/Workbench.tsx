@@ -15,6 +15,7 @@ const WorkbenchPane: React.FunctionComponent = () => {
         <div className='workbench'>
             <DraggableCore
                 onDrag={onViewDrag}
+                cancel='.gate-io-region'
             >
                 <div
                     className='gates refHandle'

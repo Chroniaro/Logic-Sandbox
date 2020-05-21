@@ -1,12 +1,12 @@
 import {createReducer} from "@reduxjs/toolkit";
-import {mousePositionOverCanvasChanged} from "./interface";
-import {WorkbenchGate, WorkbenchLinkage} from "./types";
+import {linkageAborted, linkageStarted, mousePositionOverCanvasChanged} from "./interface";
+import {WorkbenchGate} from "./types";
 import {Point} from "../util/geometry";
 import {newGateCreated} from "../browser/interface";
 
 export interface State {
     mousePositionOverCanvas: Point | null,
-    linkagePreview: WorkbenchLinkage | null,
+    linkagePreview: Point | null,
     gates: WorkbenchGate[]
 }
 
@@ -24,5 +24,11 @@ export default createReducer<State>(
         })
         .addCase(newGateCreated, (state, action) => {
             state.gates.push(action.payload);
+        })
+        .addCase(linkageStarted, (state, action) => {
+            state.linkagePreview = action.payload.fromPosition;
+        })
+        .addCase(linkageAborted, (state) => {
+            state.linkagePreview = null;
         })
 );

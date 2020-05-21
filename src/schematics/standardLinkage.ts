@@ -26,9 +26,10 @@ export function renderStandardLinkage(graphics: CanvasRenderingContext2D, layout
 
     const {from, to} = layout.data;
 
-    graphics.fillStyle = 'black';
+    graphics.strokeStyle = 'black';
     graphics.lineWidth = 3;
 
+    graphics.beginPath();
     graphics.moveTo(from.x, from.y);
     graphics.lineTo(to.x, to.y);
     graphics.stroke();

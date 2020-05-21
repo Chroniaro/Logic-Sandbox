@@ -1,6 +1,9 @@
-import React from "react";
-import {Point, Rectangle} from "../../util/geometry";
+import React, {useCallback} from "react";
+import {center, Point, Rectangle} from "../../util/geometry";
 import {getTranslateCSSProperty} from "../../util/util";
+import {DraggableCore} from "react-draggable";
+import {useDispatch} from "react-redux";
+import {linkageAborted, linkageStarted} from "../interface";
 
 interface Props {
     region: Rectangle,
@@ -8,14 +11,36 @@ interface Props {
 }
 
 const IODragRegion: React.FunctionComponent<Props> = ({region, viewPosition}) => {
+    const dispatch = useDispatch();
+
+    const onStart = useCallback(
+        () => {
+            dispatch(linkageStarted(center(region)))
+        },
+        [region, dispatch]
+    );
+
+    const onStop = useCallback(
+        () => {
+            dispatch(linkageAborted())
+        },
+        [dispatch]
+    );
+
     return (
-        <div
-            style={{
-                transform: getTranslateCSSProperty(region.x - viewPosition.x, region.y - viewPosition.y),
-                width: region.width,
-                height: region.height
-            }}
-        />
+        <DraggableCore
+            onStart={onStart}
+            onStop={onStop}
+        >
+            <div
+                className='gate-io-region'
+                style={{
+                    transform: getTranslateCSSProperty(region.x - viewPosition.x, region.y - viewPosition.y),
+                    width: region.width,
+                    height: region.height
+                }}
+            />
+        </DraggableCore>
     );
 };
 

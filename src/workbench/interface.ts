@@ -1,8 +1,9 @@
 import {createAction, createSelector} from "@reduxjs/toolkit";
 import {workbenchSelector} from "../app/interface";
 import {Gate, getSchematicLayout, Schematic} from "../schematics/schematic";
-import {WorkbenchGate} from "./types";
-import {Point} from "../util/geometry";
+import {rejectNewGate, WorkbenchGate} from "./types";
+import {Point, subtractPoints} from "../util/geometry";
+import {dragInfoSelector} from "../browser/interface";
 
 export const gatesSelector = createSelector(
     workbenchSelector,
@@ -39,6 +40,25 @@ export const schematicSelector = createSelector(
 export const schematicLayoutSelector = createSelector(
     schematicSelector,
     getSchematicLayout
+);
+
+export const mousePositionOverCanvasSelector = createSelector(
+    workbenchSelector,
+    workbench => workbench.mousePositionOverCanvas
+);
+
+export const newGateStatusSelector = createSelector(
+    dragInfoSelector,
+    mousePositionOverCanvasSelector,
+    (dragInfo, mousePosition) => {
+        if (mousePosition === null || dragInfo === null)
+            return rejectNewGate;
+        else
+            return {
+                accept: true,
+                position: subtractPoints(mousePosition, dragInfo.grabPosition),
+            }
+    }
 );
 
 export const mousePositionOverCanvasChanged = createAction(

@@ -1,8 +1,8 @@
 import {createReducer} from "@reduxjs/toolkit";
 import {mousePositionOverCanvasChanged} from "./interface";
 import {WorkbenchGate, WorkbenchLinkage} from "./types";
-import {Point, subtractPoints} from "../util/geometry";
-import {newGateDropped} from "../browser/interface";
+import {Point} from "../util/geometry";
+import {newGateCreated} from "../browser/interface";
 
 export interface State {
     mousePositionOverCanvas: Point | null,
@@ -22,17 +22,7 @@ export default createReducer<State>(
         .addCase(mousePositionOverCanvasChanged, (state, action) => {
             state.mousePositionOverCanvas = action.payload;
         })
-        .addCase(newGateDropped, (state, action) => {
-            const mousePositionOverCanvas = state.mousePositionOverCanvas;
-            if (mousePositionOverCanvas !== null) {
-                const {uuid, specification, grabPosition} = action.payload;
-                const position = subtractPoints(mousePositionOverCanvas, grabPosition);
-
-                state.gates.push({
-                    uuid,
-                    specification,
-                    position,
-                });
-            }
+        .addCase(newGateCreated, (state, action) => {
+            state.gates.push(action.payload);
         })
 );

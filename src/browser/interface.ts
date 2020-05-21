@@ -25,28 +25,38 @@ export const newSpecification = createAction(
 
 export const newGateDragStart = createAction(
     'browser/newGateDragStart',
-    (specification: Specification, position: Point) => ({
+    (specification: Specification, grabPosition: Point, nodePosition: Point) => ({
         payload: {
             specification,
-            position
+            grabPosition,
+            nodePosition,
         }
     })
 );
 
 export const newGateDragged = createAction(
     'browser/newGateDragged--minor',
-    (position) => ({
-        payload: position
+    (cursorPosition: Point) => ({
+        payload: {
+            cursorPosition
+        }
     })
 );
 
-export const newGateDropped = createAction(
-    'browser/newGateDropped',
-    (specification: Specification, grabPosition: Point) => ({
+export const newGateAborted = createAction(
+    'browser/newGateAborted',
+    () => ({
+        payload: {}
+    })
+)
+
+export const newGateCreated = createAction(
+    'browser/newGateCreated',
+    (specification: Specification, position: Point) => ({
         payload: {
             uuid: uuid(),
             specification,
-            grabPosition,
+            position,
         }
     })
 );

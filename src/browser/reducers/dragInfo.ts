@@ -1,11 +1,12 @@
 import {Specification} from "../../logic/types";
-import {Point} from "../../util/geometry";
+import {Point, subtractPoints} from "../../util/geometry";
 import {createReducer} from "@reduxjs/toolkit";
-import {newGateDragged, newGateDragStart, newGateDropped} from "../interface";
+import {newGateAborted, newGateCreated, newGateDragged, newGateDragStart} from "../interface";
 
 interface DragInformation {
     specification: Specification,
-    position: Point,
+    grabPosition: Point,
+    nodePosition: Point,
 }
 
 export type State = DragInformation | null;
@@ -22,9 +23,14 @@ export default createReducer<State>(
             if (state === null)
                 throw Error("Gate dragged when no drag started.");
 
-            state.position = action.payload;
+            const {cursorPosition} = action.payload;
+            const {grabPosition} = state;
+            state.nodePosition = subtractPoints(cursorPosition, grabPosition);
         })
-        .addCase(newGateDropped, () => {
+        .addCase(newGateAborted, () => {
+            return null;
+        })
+        .addCase(newGateCreated, () => {
             return null;
         })
 );

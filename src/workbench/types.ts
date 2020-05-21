@@ -11,3 +11,14 @@ export interface WorkbenchLinkage {
     from: Point,
     to: Point,
 }
+
+export type AcceptNewGate = {
+    accept: true,
+    position: Point
+}
+
+export type NewGateStatus = AcceptNewGate | { accept: false };
+
+export const rejectNewGate: NewGateStatus = {
+    accept: false
+};

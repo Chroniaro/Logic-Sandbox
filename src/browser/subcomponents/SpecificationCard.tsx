@@ -1,10 +1,11 @@
-import React, {useCallback, useRef} from "react";
+import React, {useCallback} from "react";
 import {Specification} from "../../logic/types";
 import SpecificationPreview from "./SpecificationPreview";
 import {DraggableCore, DraggableEventHandler} from "react-draggable";
-import {useDispatch} from "react-redux";
-import {newGateDragged, newGateDragStart, newGateDropped} from "../interface";
+import {useDispatch, useSelector} from "react-redux";
+import {newGateAborted, newGateCreated, newGateDragged, newGateDragStart} from "../interface";
 import {Point, subtractPoints} from "../../util/geometry";
+import {newGateStatusSelector} from "../../workbench/interface";
 
 interface Props {
     specification: Specification
@@ -12,12 +13,11 @@ interface Props {
 
 const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
     const dispatch = useDispatch();
-
-    const grabPositionRef = useRef<Point>({x: 0, y: 0});
+    const newGateStatus = useSelector(newGateStatusSelector);
 
     const onStart: DraggableEventHandler = useCallback(
         (event, data) => {
-            const clientPosition: Point = {
+            const cursorPosition: Point = {
                 x: data.x,
                 y: data.y,
             };
@@ -27,10 +27,11 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
                 y: data.node.offsetTop,
             };
 
-            grabPositionRef.current = subtractPoints(clientPosition, nodePosition);
+            const grabPosition = subtractPoints(cursorPosition, nodePosition);
 
             dispatch(newGateDragStart(
                 specification,
+                grabPosition,
                 nodePosition
             ));
         },
@@ -39,26 +40,25 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
 
     const onDrag: DraggableEventHandler = useCallback(
         (event, data) => {
-            const clientPosition = {
-                x: data.x,
-                y: data.y,
-            };
-
-            const nodePosition = subtractPoints(clientPosition, grabPositionRef.current);
-
-            dispatch(newGateDragged(nodePosition))
+            const {x, y} = data;
+            dispatch(newGateDragged({x, y}))
         },
         [dispatch]
     );
 
     const onStop: DraggableEventHandler = useCallback(
         () => {
-            dispatch(newGateDropped(
-                specification,
-                grabPositionRef.current
-            ));
+            if (newGateStatus.accept) {
+                dispatch(
+                    newGateCreated(
+                        specification,
+                        newGateStatus.position
+                    )
+                )
+            } else
+                dispatch(newGateAborted())
         },
-        [dispatch, specification]
+        [dispatch, specification, newGateStatus]
     );
 
     return (

@@ -11,7 +11,7 @@ const SpecificationDragPreview: React.FunctionComponent = () => {
         return null;
 
     return (
-        <DragPreview position={dragInfo.position}>
+        <DragPreview position={dragInfo.nodePosition}>
             <SpecificationPreview
                 specification={dragInfo.specification}
             />

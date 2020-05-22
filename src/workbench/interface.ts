@@ -1,13 +1,18 @@
 import {createAction, createSelector} from "@reduxjs/toolkit";
 import {workbenchSelector} from "../app/interface";
 import {Gate, getSchematicLayout, Linkage, Schematic} from "../schematics/schematic";
-import {rejectNewGate, WorkbenchGate} from "./types";
+import {rejectNewGate, WorkbenchGate, WorkbenchLinkage} from "./types";
 import {Point, subtractPoints} from "../util/geometry";
 import {dragInfoSelector} from "../browser/interface";
 
 export const gatesSelector = createSelector(
     workbenchSelector,
     workbench => workbench.gates
+);
+
+export const linkagesSelector = createSelector(
+    workbenchSelector,
+    workbench => workbench.linkages
 );
 
 function getSchematicForGate(gate: WorkbenchGate): Gate {
@@ -23,17 +28,20 @@ function getSchematicForGate(gate: WorkbenchGate): Gate {
     }
 }
 
-export const linkagePreviewSelector = createSelector(
+export const linkageFromSelector = createSelector(
     workbenchSelector,
-    workbench => workbench.linkagePreview
+    workbench => workbench.linkageFrom
 );
 
-function getSchematicForLinkage(from: Point, to: Point): Linkage {
+export const linkageToSelector = createSelector(
+    workbenchSelector,
+    workbench => workbench.linkageTo
+)
+
+function getSchematicForLinkage(linkage: WorkbenchLinkage): Linkage {
     return {
         type: 'standard',
-        data: {
-            from, to
-        }
+        data: linkage
     }
 }
 
@@ -44,13 +52,17 @@ export const mousePositionOverCanvasSelector = createSelector(
 
 export const schematicSelector = createSelector(
     gatesSelector,
-    linkagePreviewSelector,
+    linkagesSelector,
+    linkageFromSelector,
     mousePositionOverCanvasSelector,
-    (workbenchGates, linkagePreview, mousePosition) => {
+    (workbenchGates, workbenchLinkages, linkageFrom, mousePosition) => {
         const gates = workbenchGates.map(getSchematicForGate);
-        let linkages: Linkage[] = [];
-        if (linkagePreview !== null && mousePosition !== null)
-            linkages = [getSchematicForLinkage(linkagePreview, mousePosition)]
+        let linkages = workbenchLinkages.map(getSchematicForLinkage);
+        if (linkageFrom !== null && mousePosition !== null)
+            linkages.push(getSchematicForLinkage({
+                from: linkageFrom,
+                to: mousePosition
+            }));
 
         const schematic: Schematic = {
             gates,
@@ -93,6 +105,24 @@ export const linkageAborted = createAction(
     'workbench/linkageAborted',
     () => ({
         payload: {}
+    })
+);
+
+export const newLinkage = createAction(
+    'workbench/newLinkage',
+    (from: Point, to: Point) => ({
+        payload: {
+            from, to
+        }
+    })
+)
+
+export const linkageTargetChanged = createAction(
+    'workbench/linkageTargetChanged--minor',
+    (toPosition: Point | null) => ({
+        payload: {
+            toPosition
+        }
     })
 );
 

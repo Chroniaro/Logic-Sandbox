@@ -7,6 +7,11 @@ export interface WorkbenchGate {
     position: { x: number, y: number }
 }
 
+export interface WorkbenchLinkage {
+    from: Point,
+    to: Point,
+}
+
 export type AcceptNewGate = {
     accept: true,
     position: Point

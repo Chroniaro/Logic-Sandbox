@@ -2,7 +2,7 @@ import React, {useCallback} from "react";
 import SpecificationCard from "./subcomponents/SpecificationCard";
 import {useDispatch, useSelector} from "react-redux";
 import {newSpecification, specificationsSelector} from "./interface";
-import SpecificationDragPreview from "./subcomponents/SpecificationDragPreview";
+import SpecificationDragPreviewContainer from "./subcomponents/SpecificationDragPreviewContainer";
 
 const Browser: React.FunctionComponent = () => {
     const dispatch = useDispatch();
@@ -18,7 +18,7 @@ const Browser: React.FunctionComponent = () => {
 
     return (
         <div className='browser'>
-            <SpecificationDragPreview/>
+            <SpecificationDragPreviewContainer/>
             <button onClick={clickHandler}>+</button>
             {
                 specifications.map(specification => (

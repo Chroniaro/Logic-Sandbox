@@ -79,6 +79,24 @@ export function padRectangle(rect: Rectangle, horizontalPadding: number, vertica
     }
 }
 
+function distanceFromOrigin(point: Point) {
+    const {x, y} = point;
+    return Math.sqrt(x * x + y * y);
+}
+
+export function project(from: Point, toward: Point, distance: number) {
+    const delta = subtractPoints(toward, from);
+    const magnitudeOfDelta = distanceFromOrigin(delta);
+
+    if (magnitudeOfDelta < distance)
+        throw Error("Projection distance is greater than the distance between the points.");
+
+    return {
+        x: from.x + delta.x * distance / magnitudeOfDelta,
+        y: from.y + delta.y * distance / magnitudeOfDelta,
+    };
+}
+
 export function center(rectangle: Rectangle) {
     return {
         x: rectangle.x + rectangle.width / 2,
@@ -87,6 +105,23 @@ export function center(rectangle: Rectangle) {
 }
 
 // useful for calling library functions involving rectangles
-export function rectangleToList(rectangle: Rectangle): [number, number, number, number] {
+export function rectangleToXYWH(rectangle: Rectangle): [number, number, number, number] {
     return [rectangle.x, rectangle.y, rectangle.width, rectangle.height];
+}
+
+export function corners(rectangle: Rectangle): [Point, Point, Point, Point] {
+    const xs = [rectangle.x, rectangle.x + rectangle.width];
+    const ys = [rectangle.y, rectangle.y + rectangle.height];
+
+    const points = [];
+    for (const x of xs)
+        for (const y of ys)
+            points.push({x, y});
+
+    return [ // clockwise order starting with top left
+        points[0],
+        points[2],
+        points[3],
+        points[1],
+    ];
 }

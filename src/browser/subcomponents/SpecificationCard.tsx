@@ -1,32 +1,50 @@
 import React, {useCallback} from "react";
 import {Specification} from "../../logic/types";
-import SpecificationPreview from "./SpecificationPreview";
 import {DraggableCore, DraggableEventHandler} from "react-draggable";
 import {useDispatch, useSelector} from "react-redux";
 import {newGateAborted, newGateCreated, newGateDragged, newGateDragStart} from "../interface";
 import {Point, subtractPoints} from "../../util/geometry";
 import {newGateStatusSelector} from "../../workbench/interface";
+import useSpecificationPreviewLayout from "./useSpecificationPreviewLayout";
+import FullSchematic from "../../schematics/FullSchematic";
 
 interface Props {
     specification: Specification
 }
 
 const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
+    const previewLayout = useSpecificationPreviewLayout(specification);
+    const [onStart, onDrag, onStop] = useGateDragEvents(specification);
+
+    return (
+        <div
+            className='browser-specification-card'
+        >
+            <div>{specification.name}</div>
+            <DraggableCore
+                onStart={onStart}
+                onDrag={onDrag}
+                onStop={onStop}
+            >
+                <div className='refHandle'>
+                    <FullSchematic schematicLayout={previewLayout}/>
+                </div>
+            </DraggableCore>
+        </div>
+    );
+};
+
+export default SpecificationCard;
+
+function useGateDragEvents(specification: Specification) {
     const dispatch = useDispatch();
+
     const newGateStatus = useSelector(newGateStatusSelector);
 
     const onStart: DraggableEventHandler = useCallback(
         (event, data) => {
-            const cursorPosition: Point = {
-                x: data.x,
-                y: data.y,
-            };
-
-            const nodePosition = {
-                x: data.node.offsetLeft,
-                y: data.node.offsetTop,
-            };
-
+            const cursorPosition: Point = {x: data.x, y: data.y};
+            const nodePosition = {x: data.node.offsetLeft, y: data.node.offsetTop};
             const grabPosition = subtractPoints(cursorPosition, nodePosition);
 
             dispatch(newGateDragStart(
@@ -61,23 +79,5 @@ const SpecificationCard: React.FunctionComponent<Props> = ({specification}) => {
         [dispatch, specification, newGateStatus]
     );
 
-    return (
-        <div
-            className='browser-specification-card'
-        >
-            <div>{specification.name}</div>
-            <DraggableCore
-                onStart={onStart}
-                onDrag={onDrag}
-                onStop={onStop}
-            >
-                <div className='refHandle'>
-                    <SpecificationPreview specification={specification}/>
-                </div>
-            </DraggableCore>
-
-        </div>
-    );
-};
-
-export default SpecificationCard;
+    return [onStart, onDrag, onStop];
+}

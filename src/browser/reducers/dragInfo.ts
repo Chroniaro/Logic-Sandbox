@@ -3,7 +3,7 @@ import {Point, subtractPoints} from "../../util/geometry";
 import {createReducer} from "@reduxjs/toolkit";
 import {newGateAborted, newGateCreated, newGateDragged, newGateDragStart} from "../interface";
 
-interface DragInformation {
+export interface DragInformation {
     specification: Specification,
     grabPosition: Point,
     nodePosition: Point,

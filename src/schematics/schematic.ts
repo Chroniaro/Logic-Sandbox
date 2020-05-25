@@ -5,7 +5,7 @@ import {
     StandardLinkage,
     StandardLinkageLayout
 } from "./standardLinkage";
-import {enclosingRectangle, intersects, Point, Rectangle, rectangleToList} from "../util/geometry";
+import {enclosingRectangle, intersects, Point, Rectangle, rectangleToXYWH} from "../util/geometry";
 
 export type Gate = StandardGate;
 export type GateLayout = StandardGateLayout;
@@ -65,9 +65,9 @@ export function renderSchematic(graphics: CanvasRenderingContext2D, layout: Sche
     graphics.save();
 
     graphics.translate(position.x - viewBox.x, position.y - viewBox.y);
-    graphics.rect(...rectangleToList(viewBox));
+    graphics.rect(...rectangleToXYWH(viewBox));
     graphics.clip();
-    graphics.clearRect(...rectangleToList(viewBox));
+    graphics.clearRect(...rectangleToXYWH(viewBox));
 
     for (const gateLayout of Object.values(layout.gateLayouts))
         if (intersects(gateLayout.data.outerBoundary, viewBox))
@@ -83,7 +83,7 @@ function renderGate(graphics: CanvasRenderingContext2D, layout: GateLayout) {
     graphics.save();
 
     const gateBoundary = layout.data.outerBoundary;
-    graphics.rect(...rectangleToList(gateBoundary));
+    graphics.rect(...rectangleToXYWH(gateBoundary));
     graphics.clip();
 
     // noinspection JSRedundantSwitchStatement

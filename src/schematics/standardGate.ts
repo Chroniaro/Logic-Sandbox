@@ -1,5 +1,5 @@
 import {padRectangle, Point, Rectangle} from "../util/geometry";
-import {fillText, roundedRect, styleOptions} from "./renderUtil";
+import {fillText, layoutIOBox, layoutText, renderGateBody, renderIOBox, styleOptions} from "./renderCommons";
 
 export interface StandardGate {
     type: 'standard';
@@ -30,7 +30,6 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
         fontSize,
         textMargin,
         ioSize,
-        charWidthRatio,
         outerMargin,
     } = styleOptions;
 
@@ -43,39 +42,32 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
 
     const textHeight = fontSize;
 
-    const minimumBodyHeight = textHeight + 2 * textMargin;
     const inputsHeight = ioSize * numInputs;
     const outputsHeight = ioSize * numOutputs;
-    const bodyHeight = Math.max(minimumBodyHeight, inputsHeight, outputsHeight);
+    const bodyHeight = Math.max(textHeight + 2 * textMargin, inputsHeight, outputsHeight);
 
     const textVerticalOffset = (bodyHeight - textHeight) / 2;
 
-    const nameRegion = {
+    const nameRegion = layoutText(name, {
         x: position.x + outerMargin + ioSize + textMargin,
         y: position.y + outerMargin + textVerticalOffset,
-        width: fontSize * name.length * charWidthRatio,
-        height: textHeight
-    };
+    });
 
     const body = padRectangle(nameRegion, textMargin, textVerticalOffset);
 
     const inputs = [];
     for (let i = 0; i < numInputs; ++i)
-        inputs[i] = {
+        inputs[i] = layoutIOBox({
             x: body.x - ioSize,
             y: body.y + (bodyHeight - inputsHeight) / 2 + i * ioSize,
-            width: ioSize,
-            height: ioSize,
-        };
+        });
 
     const outputs = [];
     for (let i = 0; i < numOutputs; ++i)
-        outputs[i] = {
+        outputs[i] = layoutIOBox({
             x: body.x + body.width,
             y: body.y + (bodyHeight - outputsHeight) / 2 + i * ioSize,
-            width: ioSize,
-            height: ioSize
-        };
+        });
 
     const outerBoundary = padRectangle(body, ioSize + outerMargin, outerMargin);
 
@@ -94,8 +86,6 @@ export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
 
 export function renderStandardGate(graphics: CanvasRenderingContext2D, layout: StandardGateLayout): void {
     const {
-        borderThickness,
-        cornerRadius,
         fontSize,
         font,
     } = styleOptions;
@@ -108,32 +98,15 @@ export function renderStandardGate(graphics: CanvasRenderingContext2D, layout: S
         outputs,
     } = layout.data;
 
-    graphics.fillStyle = "lightgrey";
-    graphics.strokeStyle = "darkgrey";
-    graphics.lineWidth = borderThickness;
-    roundedRect(graphics, body, cornerRadius);
-    graphics.fill();
-    graphics.stroke();
+    renderGateBody(graphics, body);
 
     graphics.fillStyle = "black";
     graphics.font = fontSize + "px " + font;
     fillText(graphics, nameRegion, name);
 
-    graphics.fillStyle = "lightblue";
-    graphics.strokeStyle = "blue";
-    for (const input of inputs) {
-        const paddedInput = padRectangle(input, -2);
-        roundedRect(graphics, paddedInput, 2);
-        graphics.fill();
-        graphics.stroke();
-    }
+    for (const bounds of inputs)
+        renderIOBox(graphics, bounds, 'input');
 
-    graphics.fillStyle = "pink";
-    graphics.strokeStyle = "red";
-    for (const output of outputs) {
-        const paddedOutput = padRectangle(output, -2);
-        roundedRect(graphics, paddedOutput, 2);
-        graphics.fill();
-        graphics.stroke();
-    }
+    for (const bounds of outputs)
+        renderIOBox(graphics, bounds, 'output');
 }

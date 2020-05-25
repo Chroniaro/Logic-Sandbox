@@ -1,19 +1,20 @@
 import React from "react";
-import {useSelector} from "react-redux";
-import {dragInfoSelector} from "../interface";
-import SpecificationPreview from "./SpecificationPreview";
 import DragPreview from "../../util/DragPreview";
+import {DragInformation} from "../reducers/dragInfo";
+import useSpecificationPreviewLayout from "./useSpecificationPreviewLayout";
+import FullSchematic from "../../schematics/FullSchematic";
 
-const SpecificationDragPreview: React.FunctionComponent = () => {
-    const dragInfo = useSelector(dragInfoSelector);
+interface Props {
+    dragInfo: DragInformation
+}
 
-    if (dragInfo === null)
-        return null;
+const SpecificationDragPreview: React.FunctionComponent<Props> = ({dragInfo}) => {
+    const previewLayout = useSpecificationPreviewLayout(dragInfo.specification);
 
     return (
         <DragPreview position={dragInfo.nodePosition}>
-            <SpecificationPreview
-                specification={dragInfo.specification}
+            <FullSchematic
+                schematicLayout={previewLayout}
             />
         </DragPreview>
     );

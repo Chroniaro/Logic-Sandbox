@@ -64,29 +64,24 @@ function layoutGroup(position: Point, group: Group): Layout<Group> {
     let childLayouts: { [key: string]: Layout<LayoutSpecification> } = {};
 
     for (const [key, child] of Object.entries(group.children)) {
-        if (group.direction === 'horizontal') {
-            const childPosition = {
-                x: position.x + width,
-                y: position.y + verticalPadding,
-            };
-            const childLayout = layout(childPosition, child);
+        // children are later centered with respect to the baseline,
+        // so the x coordinate doesn't matter for a vertical group and vice versa
+        const childPosition = {
+            x: position.x + width, // relevant for horizontal groups
+            y: position.y + height, // relevant for vertical groups
+        };
 
+        const childLayout = layout(childPosition, child);
+
+        if (group.direction === 'horizontal') {
             width += childLayout.boundary.width + horizontalPadding;
             height = Math.max(height, childLayout.boundary.height + 2 * verticalPadding);
-
-            childLayouts[key] = childLayout;
         } else {
-            const childPosition = {
-                x: position.x + horizontalPadding,
-                y: position.y + height,
-            };
-            const childLayout = layout(childPosition, child);
-
             height += childLayout.boundary.height + verticalPadding;
             width = Math.max(width, childLayout.boundary.width + 2 * horizontalPadding);
-
-            childLayouts[key] = childLayout;
         }
+
+        childLayouts[key] = childLayout;
     }
 
     const boundary = {
@@ -112,14 +107,14 @@ function center(childLayout: Layout<LayoutSpecification>, baseLineDirection: 'ho
         const delta = targetOffset - actualOffset;
         shiftVertical(childLayout, delta);
         if (childLayout.type === 'group')
-            childLayout.boundary = padRectangle(childLayout.boundary, 0, delta);
+            childLayout.boundary = padRectangle(childLayout.boundary, 0, targetOffset);
     } else {
         const targetOffset = (boundary.width - childLayout.boundary.width) / 2;
         const actualOffset = childLayout.boundary.x - boundary.x;
         const delta = targetOffset - actualOffset;
         shiftHorizontal(childLayout, delta);
         if (childLayout.type === 'group')
-            childLayout.boundary = padRectangle(childLayout.boundary, delta, 0);
+            childLayout.boundary = padRectangle(childLayout.boundary, targetOffset, 0);
     }
 }
 

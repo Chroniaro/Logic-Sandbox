@@ -10,11 +10,12 @@ export function subtractPoints(point1: Point, point2: Point): Point {
     }
 }
 
-export interface Rectangle {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+export interface Dimensions {
+    width: number,
+    height: number,
+}
+
+export interface Rectangle extends Point, Dimensions {
 }
 
 export function moveRectangle(rectangle: Rectangle, newPosition: Point): Rectangle {
@@ -67,15 +68,23 @@ export function intersects(rectangle1: Rectangle, rectangle2: Rectangle) {
     return intersection(rectangle1, rectangle2) !== ZERO_RECTANGLE;
 }
 
-export function padRectangle(rect: Rectangle, horizontalPadding: number, verticalPadding?: number) {
+export function padDimensions(dimensions: Dimensions, horizontalPadding: number, verticalPadding: number): Dimensions {
+    return {
+        width: dimensions.width + 2 * horizontalPadding,
+        height: dimensions.height + 2 * verticalPadding,
+    }
+}
+
+export function padRectangle(rectangle: Rectangle, padding: number): Rectangle;
+export function padRectangle(rectangle: Rectangle, horizontalPadding: number, verticalPadding: number): Rectangle;
+export function padRectangle(rectangle: Rectangle, horizontalPadding: number, verticalPadding?: number) {
     if (verticalPadding === undefined)
         verticalPadding = horizontalPadding;
 
     return {
-        x: rect.x - horizontalPadding,
-        y: rect.y - verticalPadding,
-        width: rect.width + 2 * horizontalPadding,
-        height: rect.height + 2 * verticalPadding,
+        ...padDimensions(rectangle, horizontalPadding, verticalPadding),
+        x: rectangle.x - horizontalPadding,
+        y: rectangle.y - verticalPadding,
     }
 }
 

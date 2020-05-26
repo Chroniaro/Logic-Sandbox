@@ -35,7 +35,7 @@ export function getSchematicLayout(schematic: Schematic): SchematicLayout {
 
     const outerBoundary = enclosingRectangle(
         ...Object.values(gateLayouts)
-            .map(layout => layout.data.outerBoundary)
+            .map(layout => layout.data.layout.boundary)
     );
 
     return {
@@ -70,7 +70,7 @@ export function renderSchematic(graphics: CanvasRenderingContext2D, layout: Sche
     graphics.clearRect(...rectangleToXYWH(viewBox));
 
     for (const gateLayout of Object.values(layout.gateLayouts))
-        if (intersects(gateLayout.data.outerBoundary, viewBox))
+        if (intersects(gateLayout.data.layout.boundary, viewBox))
             renderGate(graphics, gateLayout);
 
     for (const linkageLayout of layout.linkageLayouts)
@@ -82,7 +82,7 @@ export function renderSchematic(graphics: CanvasRenderingContext2D, layout: Sche
 function renderGate(graphics: CanvasRenderingContext2D, layout: GateLayout) {
     graphics.save();
 
-    const gateBoundary = layout.data.outerBoundary;
+    const gateBoundary = layout.data.layout.boundary;
     graphics.rect(...rectangleToXYWH(gateBoundary));
     graphics.clip();
 

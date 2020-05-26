@@ -9,8 +9,8 @@ interface Props {
 }
 
 const GateIO: React.FunctionComponent<Props> = ({gateLayout, viewPosition}) => {
-    const inputRegions = getDragRegions(viewPosition, gateLayout.data.inputs);
-    const outputRegions = getDragRegions(viewPosition, gateLayout.data.outputs);
+    const inputRegions = getDragRegions(viewPosition, gateLayout.data.layout.children.inputs.children);
+    const outputRegions = getDragRegions(viewPosition, gateLayout.data.layout.children.outputs.children);
 
     return (
         <>
@@ -22,12 +22,12 @@ const GateIO: React.FunctionComponent<Props> = ({gateLayout, viewPosition}) => {
 
 export default GateIO;
 
-function getDragRegions(viewPosition: Point, regions: Rectangle[]) {
-    return regions.map(
-        (region, index) => (
+function getDragRegions(viewPosition: Point, regions: { [key: string]: { boundary: Rectangle } }) {
+    return Object.entries(regions).map(
+        ([key, region]) => (
             <IODragRegion
-                key={index}
-                region={region}
+                key={key}
+                region={region.boundary}
                 viewPosition={viewPosition}
             />
         )

@@ -1,5 +1,13 @@
-import {padRectangle, Point, Rectangle} from "../util/geometry";
-import {fillText, layoutIOBox, layoutText, renderGateBody, renderIOBox, styleOptions} from "./renderCommons";
+import {Point} from "../util/geometry";
+import {
+    estimateTextDimensions,
+    fillText,
+    getIOBoxColumn,
+    renderGateBody,
+    renderIOBox,
+    styleOptions
+} from "./renderCommons";
+import layout from "../util/layout";
 
 export interface StandardGate {
     type: 'standard';
@@ -13,100 +21,56 @@ export interface StandardGate {
     }
 }
 
-export interface StandardGateLayout {
-    type: 'standard';
-    data: {
-        name: string;
-        nameRegion: Rectangle;
-        body: Rectangle;
-        inputs: Rectangle[];
-        outputs: Rectangle[];
-        outerBoundary: Rectangle;
-    }
-}
+export function getStandardGateLayout(gate: StandardGate) {
+    const {textMargin} = styleOptions;
+    const {name, position} = gate.data;
 
-export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
-    const {
-        fontSize,
-        textMargin,
-        ioSize,
-        outerMargin,
-    } = styleOptions;
-
-    const {
-        name,
-        position,
-        numInputs,
-        numOutputs
-    } = gate.data;
-
-    const textHeight = fontSize;
-
-    const inputsHeight = ioSize * numInputs;
-    const outputsHeight = ioSize * numOutputs;
-    const bodyHeight = Math.max(textHeight + 2 * textMargin, inputsHeight, outputsHeight);
-
-    const textVerticalOffset = (bodyHeight - textHeight) / 2;
-
-    const nameRegion = layoutText(name, {
-        x: position.x + outerMargin + ioSize + textMargin,
-        y: position.y + outerMargin + textVerticalOffset,
+    const gateLayout = layout(position, {
+        type: 'group',
+        direction: 'horizontal',
+        children: {
+            inputs: getIOBoxColumn(gate.data.numInputs),
+            body: {
+                type: 'group',
+                direction: 'horizontal',
+                horizontalPadding: textMargin,
+                verticalPadding: textMargin,
+                children: {
+                    nameRegion: {
+                        type: 'leaf',
+                        dimensions: estimateTextDimensions(gate.data.name)
+                    }
+                }
+            },
+            outputs: getIOBoxColumn(gate.data.numOutputs)
+        }
     });
-
-    const body = padRectangle(nameRegion, textMargin, textVerticalOffset);
-
-    const inputs = [];
-    for (let i = 0; i < numInputs; ++i)
-        inputs[i] = layoutIOBox({
-            x: body.x - ioSize,
-            y: body.y + (bodyHeight - inputsHeight) / 2 + i * ioSize,
-        });
-
-    const outputs = [];
-    for (let i = 0; i < numOutputs; ++i)
-        outputs[i] = layoutIOBox({
-            x: body.x + body.width,
-            y: body.y + (bodyHeight - outputsHeight) / 2 + i * ioSize,
-        });
-
-    const outerBoundary = padRectangle(body, ioSize + outerMargin, outerMargin);
 
     return {
         type: 'standard',
         data: {
             name,
-            nameRegion,
-            body,
-            inputs,
-            outputs,
-            outerBoundary,
+            layout: gateLayout,
         }
     }
 }
 
-export function renderStandardGate(graphics: CanvasRenderingContext2D, layout: StandardGateLayout): void {
-    const {
-        fontSize,
-        font,
-    } = styleOptions;
+export type StandardGateLayout = ReturnType<typeof getStandardGateLayout>;
 
-    const {
-        name,
-        nameRegion,
-        body,
-        inputs,
-        outputs,
-    } = layout.data;
+export function renderStandardGate(graphics: CanvasRenderingContext2D, gateLayout: StandardGateLayout): void {
+    const {font, fontSize} = styleOptions;
 
-    renderGateBody(graphics, body);
+    const {name, layout} = gateLayout.data;
+
+    renderGateBody(graphics, layout.children.body.boundary);
 
     graphics.fillStyle = "black";
     graphics.font = fontSize + "px " + font;
-    fillText(graphics, nameRegion, name);
+    fillText(graphics, layout.children.body.children.nameRegion.boundary, name);
 
-    for (const bounds of inputs)
-        renderIOBox(graphics, bounds, 'input');
+    for (const input of Object.values(layout.children.inputs.children))
+        renderIOBox(graphics, input.boundary, 'input');
 
-    for (const bounds of outputs)
-        renderIOBox(graphics, bounds, 'output');
+    for (const output of Object.values(layout.children.outputs.children))
+        renderIOBox(graphics, output.boundary, 'output');
 }

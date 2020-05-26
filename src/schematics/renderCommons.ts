@@ -1,4 +1,5 @@
-import {corners, padRectangle, Point, project, Rectangle} from "../util/geometry";
+import {corners, Dimensions, padRectangle, Point, project, Rectangle} from "../util/geometry";
+import {Group, Leaf} from "../util/layout";
 
 export const styleOptions = {
     fontSize: 16,
@@ -6,7 +7,6 @@ export const styleOptions = {
     charWidthRatio: 0.6, // String sizes are estimated, and then the actual strings are stretched to fit the estimate
     ioSize: 16,
     textMargin: 5,
-    outerMargin: 2,
     borderThickness: 3,
     cornerRadius: 5,
 };
@@ -46,33 +46,32 @@ export function roundedRect(graphics: CanvasRenderingContext2D, boundingRect: Re
     roundedPolygon(graphics, corners(boundingRect), radius);
 }
 
-export function fillText(graphics: CanvasRenderingContext2D, rectangle: Rectangle, text: string) {
-    graphics.save();
-
-    graphics.textBaseline = "top";
-    const textMetrics = graphics.measureText(text);
-    const textWidth = textMetrics.width;
-    const textHeight = textMetrics.actualBoundingBoxDescent;
-
-    graphics.translate(rectangle.x, rectangle.y);
-    graphics.scale(rectangle.width / textWidth, rectangle.height / textHeight);
-    graphics.fillText(text, 0, 0);
-
-    graphics.restore();
-}
-
-export function layoutIOBox(position: Point): Rectangle {
+export function getIOBoxDimensions(): Dimensions {
     const {ioSize} = styleOptions;
     return {
-        ...position,
         width: ioSize,
         height: ioSize,
     };
 }
 
+export function getIOBoxColumn(amount: number): Group {
+    let childSpecifications: { [key: string]: Leaf } = {};
+    for (let i = 0; i < amount; ++i)
+        childSpecifications[i] = {
+            type: 'leaf',
+            dimensions: getIOBoxDimensions(),
+        };
+
+    return {
+        type: 'group',
+        direction: 'vertical',
+        children: childSpecifications,
+    }
+}
+
 export function renderIOBox(graphics: CanvasRenderingContext2D, bounds: Rectangle, type: 'input' | 'output') {
     const {borderThickness} = styleOptions;
-    const insetBounds = padRectangle(bounds, -borderThickness / 2);
+    const insetBounds = padRectangle(bounds, -borderThickness);
 
     graphics.save();
 
@@ -92,17 +91,31 @@ export function renderIOBox(graphics: CanvasRenderingContext2D, bounds: Rectangl
     graphics.restore();
 }
 
-export function layoutText(text: string, position: Point): Rectangle {
+export function estimateTextDimensions(text: string): Dimensions {
     const {
         fontSize,
         charWidthRatio,
     } = styleOptions;
 
     return {
-        ...position,
         width: fontSize * text.length * charWidthRatio,
         height: fontSize,
     }
+}
+
+export function fillText(graphics: CanvasRenderingContext2D, rectangle: Rectangle, text: string) {
+    graphics.save();
+
+    graphics.textBaseline = "top";
+    const textMetrics = graphics.measureText(text);
+    const textWidth = textMetrics.width;
+    const textHeight = textMetrics.actualBoundingBoxDescent;
+
+    graphics.translate(rectangle.x, rectangle.y);
+    graphics.scale(rectangle.width / textWidth, rectangle.height / textHeight);
+    graphics.fillText(text, 0, 0);
+
+    graphics.restore();
 }
 
 export function renderGateBody(graphics: CanvasRenderingContext2D, bounds: Rectangle) {

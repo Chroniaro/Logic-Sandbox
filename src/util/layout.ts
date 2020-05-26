@@ -55,43 +55,48 @@ function layoutLeaf(position: Point, leaf: Leaf): Layout<Leaf> {
     }
 }
 
+interface LayoutOrientation {
+    majorCoordinate: keyof Point;
+    majorDimension: keyof Dimensions;
+    minorCoordinate: keyof Point;
+    minorDimension: keyof Dimensions;
+}
+
+const orientations: { [key: string]: LayoutOrientation } = {
+    horizontal: {
+        majorCoordinate: 'x',
+        majorDimension: 'width',
+        minorCoordinate: 'y',
+        minorDimension: 'height',
+    },
+    vertical: {
+        majorCoordinate: 'y',
+        majorDimension: 'height',
+        minorCoordinate: 'x',
+        minorDimension: 'width',
+    },
+};
+
 function layoutGroup(position: Point, group: Group): Layout<Group> {
     const horizontalPadding = group.horizontalPadding ? group.horizontalPadding : 0;
     const verticalPadding = group.verticalPadding ? group.verticalPadding : 0;
-
-    let width = horizontalPadding;
-    let height = verticalPadding;
-    let childLayouts: { [key: string]: Layout<LayoutSpecification> } = {};
-
-    for (const [key, child] of Object.entries(group.children)) {
-        // children are later centered with respect to the baseline,
-        // so the x coordinate doesn't matter for a vertical group and vice versa
-        const childPosition = {
-            x: position.x + width, // relevant for horizontal groups
-            y: position.y + height, // relevant for vertical groups
-        };
-
-        const childLayout = layout(childPosition, child);
-
-        if (group.direction === 'horizontal') {
-            width += childLayout.boundary.width + horizontalPadding;
-            height = Math.max(height, childLayout.boundary.height + 2 * verticalPadding);
-        } else {
-            height += childLayout.boundary.height + verticalPadding;
-            width = Math.max(width, childLayout.boundary.width + 2 * horizontalPadding);
-        }
-
-        childLayouts[key] = childLayout;
-    }
-
-    const boundary = {
-        ...position,
-        width,
-        height
+    const padding = {
+        width: horizontalPadding,
+        height: verticalPadding,
     };
 
+    const orientation = orientations[group.direction];
+
+    const [childLayouts, boundary] = layoutChildren(
+        position,
+        group.children,
+        orientation.majorCoordinate,
+        orientation.majorDimension,
+        padding
+    );
+
     for (const childLayout of Object.values(childLayouts))
-        center(childLayout, group.direction, boundary);
+        center(childLayout, orientation.minorCoordinate, orientation.minorDimension, boundary);
 
     return {
         type: 'group',
@@ -100,36 +105,65 @@ function layoutGroup(position: Point, group: Group): Layout<Group> {
     }
 }
 
-function center(childLayout: Layout<LayoutSpecification>, baseLineDirection: 'horizontal' | 'vertical', boundary: Rectangle) {
-    if (baseLineDirection === 'horizontal') {
-        const targetOffset = (boundary.height - childLayout.boundary.height) / 2;
-        const actualOffset = childLayout.boundary.y - boundary.y;
-        const delta = targetOffset - actualOffset;
-        shiftVertical(childLayout, delta);
-        if (childLayout.type === 'group')
-            childLayout.boundary = padRectangle(childLayout.boundary, 0, targetOffset);
-    } else {
-        const targetOffset = (boundary.width - childLayout.boundary.width) / 2;
-        const actualOffset = childLayout.boundary.x - boundary.x;
-        const delta = targetOffset - actualOffset;
-        shiftHorizontal(childLayout, delta);
-        if (childLayout.type === 'group')
-            childLayout.boundary = padRectangle(childLayout.boundary, targetOffset, 0);
+function layoutChildren(
+    rootPosition: Point, children: { [key: string]: LayoutSpecification },
+    majorCoordinate: keyof Point, majorDimension: keyof Dimensions,
+    padding: Dimensions,
+): [{ [key: string]: Layout<LayoutSpecification> }, Rectangle] {
+
+    const minorCoordinate = (majorCoordinate === 'x' ? 'y' : 'x');
+    const minorDimension = (majorDimension === 'width' ? 'height' : 'width');
+
+    const majorPadding = padding[majorDimension];
+    const minorPadding = padding[minorDimension];
+
+    let majorSize = majorPadding;
+    let minorSize = minorPadding;
+    let childLayouts: { [key: string]: Layout<LayoutSpecification> } = {};
+
+    for (const [key, child] of Object.entries(children)) {
+        const childPosition: Point = {
+            x: 0, y: 0, // defaults to make the type checker happy
+            [majorCoordinate]: rootPosition[majorCoordinate] + majorSize,
+            [minorCoordinate]: rootPosition[minorCoordinate] + minorPadding,
+        };
+
+        const childLayout = layout(childPosition, child);
+
+        majorSize += childLayout.boundary[majorDimension] + majorPadding;
+        minorSize = Math.max(minorSize, childLayout.boundary[minorDimension] + 2 * minorPadding);
+
+        childLayouts[key] = childLayout;
+    }
+
+    const boundary: Rectangle = {
+        ...rootPosition,
+        width: 0, height: 0, // defaults to make the type checker happy
+        [majorDimension]: majorSize,
+        [minorDimension]: minorSize,
+    };
+
+    return [childLayouts, boundary];
+}
+
+function center(childLayout: Layout<LayoutSpecification>, coordinate: keyof Point, dimension: keyof Dimensions, boundary: Rectangle) {
+    const targetOffset = (boundary[dimension] - childLayout.boundary[dimension]) / 2;
+    const actualOffset = childLayout.boundary[coordinate] - boundary[coordinate];
+    const delta = targetOffset - actualOffset;
+    shift(childLayout, coordinate, delta);
+    if (childLayout.type === 'group') {
+        const padding: Dimensions = {
+            width: 0, height: 0, // default values
+            [dimension]: targetOffset, // override value
+        };
+        childLayout.boundary = padRectangle(childLayout.boundary, padding);
     }
 }
 
-function shiftHorizontal(layout: Layout<LayoutSpecification>, amount: number) {
-    layout.boundary.x += amount;
+function shift(layout: Layout<LayoutSpecification>, coordinate: keyof Point, amount: number) {
+    layout.boundary[coordinate] += amount;
 
     if (layout.type === 'group')
         for (const child of Object.values(layout.children))
-            shiftHorizontal(child, amount);
-}
-
-function shiftVertical(layout: Layout<LayoutSpecification>, amount: number) {
-    layout.boundary.y += amount;
-
-    if (layout.type === 'group')
-        for (const child of Object.values(layout.children))
-            shiftVertical(child, amount);
+            shift(child, coordinate, amount);
 }

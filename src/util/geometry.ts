@@ -68,23 +68,18 @@ export function intersects(rectangle1: Rectangle, rectangle2: Rectangle) {
     return intersection(rectangle1, rectangle2) !== ZERO_RECTANGLE;
 }
 
-export function padDimensions(dimensions: Dimensions, horizontalPadding: number, verticalPadding: number): Dimensions {
-    return {
-        width: dimensions.width + 2 * horizontalPadding,
-        height: dimensions.height + 2 * verticalPadding,
-    }
-}
-
-export function padRectangle(rectangle: Rectangle, padding: number): Rectangle;
-export function padRectangle(rectangle: Rectangle, horizontalPadding: number, verticalPadding: number): Rectangle;
-export function padRectangle(rectangle: Rectangle, horizontalPadding: number, verticalPadding?: number) {
-    if (verticalPadding === undefined)
-        verticalPadding = horizontalPadding;
+export function padRectangle(rectangle: Rectangle, padding: Dimensions | number): Rectangle {
+    if (typeof (padding) === 'number')
+        padding = {
+            width: padding,
+            height: padding,
+        };
 
     return {
-        ...padDimensions(rectangle, horizontalPadding, verticalPadding),
-        x: rectangle.x - horizontalPadding,
-        y: rectangle.y - verticalPadding,
+        x: rectangle.x - padding.width,
+        y: rectangle.y - padding.height,
+        width: rectangle.width + 2 * padding.width,
+        height: rectangle.height + 2 * padding.height,
     }
 }
 

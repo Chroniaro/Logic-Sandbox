@@ -55,11 +55,14 @@ function layoutLeaf(position: Point, leaf: Leaf): Layout<Leaf> {
     }
 }
 
+type Coordinate = keyof Point;
+type Dimension = keyof Dimensions;
+
 interface LayoutOrientation {
-    majorCoordinate: keyof Point;
-    majorDimension: keyof Dimensions;
-    minorCoordinate: keyof Point;
-    minorDimension: keyof Dimensions;
+    majorCoordinate: Coordinate;
+    majorDimension: Dimension;
+    minorCoordinate: Coordinate;
+    minorDimension: Dimension;
 }
 
 const orientations: { [key: string]: LayoutOrientation } = {
@@ -87,16 +90,9 @@ function layoutGroup(position: Point, group: Group): Layout<Group> {
 
     const orientation = orientations[group.direction];
 
-    const [childLayouts, boundary] = layoutChildren(
-        position,
-        group.children,
-        orientation.majorCoordinate,
-        orientation.majorDimension,
-        padding
-    );
-
+    const [childLayouts, boundary] = layoutChildren(position, group.children, orientation, padding);
     for (const childLayout of Object.values(childLayouts))
-        center(childLayout, orientation.minorCoordinate, orientation.minorDimension, boundary);
+        center(childLayout, orientation, boundary);
 
     return {
         type: 'group',
@@ -105,27 +101,33 @@ function layoutGroup(position: Point, group: Group): Layout<Group> {
     }
 }
 
-function layoutChildren(
-    rootPosition: Point, children: { [key: string]: LayoutSpecification },
-    majorCoordinate: keyof Point, majorDimension: keyof Dimensions,
-    padding: Dimensions,
-): [{ [key: string]: Layout<LayoutSpecification> }, Rectangle] {
+type AnyLayout = Layout<LayoutSpecification>;
+type LayoutMap = { [key: string]: AnyLayout };
+type LayoutSpecificationMap = { [key: string]: LayoutSpecification }
 
-    const minorCoordinate = (majorCoordinate === 'x' ? 'y' : 'x');
-    const minorDimension = (majorDimension === 'width' ? 'height' : 'width');
+function layoutChildren(
+    position: Point, children: LayoutSpecificationMap, orientation: LayoutOrientation, padding: Dimensions
+): [LayoutMap, Rectangle] {
+
+    const {
+        majorCoordinate,
+        majorDimension,
+        minorCoordinate,
+        minorDimension
+    } = orientation;
 
     const majorPadding = padding[majorDimension];
     const minorPadding = padding[minorDimension];
 
     let majorSize = majorPadding;
     let minorSize = minorPadding;
-    let childLayouts: { [key: string]: Layout<LayoutSpecification> } = {};
+    let childLayouts: LayoutMap = {};
 
     for (const [key, child] of Object.entries(children)) {
         const childPosition: Point = {
             x: 0, y: 0, // defaults to make the type checker happy
-            [majorCoordinate]: rootPosition[majorCoordinate] + majorSize,
-            [minorCoordinate]: rootPosition[minorCoordinate] + minorPadding,
+            [majorCoordinate]: position[majorCoordinate] + majorSize,
+            [minorCoordinate]: position[minorCoordinate] + minorPadding,
         };
 
         const childLayout = layout(childPosition, child);
@@ -137,7 +139,7 @@ function layoutChildren(
     }
 
     const boundary: Rectangle = {
-        ...rootPosition,
+        ...position,
         width: 0, height: 0, // defaults to make the type checker happy
         [majorDimension]: majorSize,
         [minorDimension]: minorSize,
@@ -146,7 +148,10 @@ function layoutChildren(
     return [childLayouts, boundary];
 }
 
-function center(childLayout: Layout<LayoutSpecification>, coordinate: keyof Point, dimension: keyof Dimensions, boundary: Rectangle) {
+function center(childLayout: AnyLayout, orientation: LayoutOrientation, boundary: Rectangle) {
+    const coordinate = orientation.minorCoordinate;
+    const dimension = orientation.minorDimension;
+
     const targetOffset = (boundary[dimension] - childLayout.boundary[dimension]) / 2;
     const actualOffset = childLayout.boundary[coordinate] - boundary[coordinate];
     const delta = targetOffset - actualOffset;
@@ -160,7 +165,7 @@ function center(childLayout: Layout<LayoutSpecification>, coordinate: keyof Poin
     }
 }
 
-function shift(layout: Layout<LayoutSpecification>, coordinate: keyof Point, amount: number) {
+function shift(layout: Layout<LayoutSpecification>, coordinate: Coordinate, amount: number) {
     layout.boundary[coordinate] += amount;
 
     if (layout.type === 'group')

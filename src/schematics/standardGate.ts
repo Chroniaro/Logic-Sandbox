@@ -23,13 +23,18 @@ export interface StandardGate {
 
 export function getStandardGateLayout(gate: StandardGate) {
     const {textMargin} = styleOptions;
-    const {name, position} = gate.data;
+    const {
+        name,
+        position,
+        numInputs,
+        numOutputs,
+    } = gate.data;
 
     const gateLayout = layout(position, {
         type: 'group',
         direction: 'horizontal',
         children: {
-            inputs: getIOBoxColumn(gate.data.numInputs),
+            inputs: getIOBoxColumn(numInputs),
             body: {
                 type: 'group',
                 direction: 'horizontal',
@@ -38,11 +43,11 @@ export function getStandardGateLayout(gate: StandardGate) {
                 children: {
                     nameRegion: {
                         type: 'leaf',
-                        dimensions: estimateTextDimensions(gate.data.name)
+                        dimensions: estimateTextDimensions(name)
                     }
                 }
             },
-            outputs: getIOBoxColumn(gate.data.numOutputs)
+            outputs: getIOBoxColumn(numOutputs)
         }
     });
 

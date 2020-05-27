@@ -57,6 +57,16 @@ export const schematicSelector = createSelector(
     mousePositionOverCanvasSelector,
     (workbenchGates, workbenchLinkages, linkageFrom, mousePosition) => {
         const gates = workbenchGates.map(getSchematicForGate);
+        gates.push({
+            type: 'io',
+            data: {
+                uuid: 'foo',
+                position: {x: 0, y: 0},
+                ioType: 'input',
+                numBoxes: 3,
+            }
+        });
+
         let linkages = workbenchLinkages.map(getSchematicForLinkage);
         if (linkageFrom !== null && mousePosition !== null)
             linkages.push(getSchematicForLinkage({

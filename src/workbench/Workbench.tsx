@@ -26,15 +26,17 @@ const WorkbenchPane: React.FunctionComponent = () => {
                         schematicLayout={schematicLayout}
                         viewPosition={viewPosition}
                     > {
-                        Object.entries(schematicLayout.gateLayouts).map(
-                            ([uuid, gateLayout]) => (
-                                <GateIO
-                                    key={uuid}
-                                    gateLayout={gateLayout}
-                                    viewPosition={viewPosition}
-                                />
+                        Object.entries(schematicLayout.gateLayouts)
+                            .map(
+                                ([uuid, gateLayout]) =>
+                                    gateLayout.type === 'standard' ? (
+                                        <GateIO
+                                            key={uuid}
+                                            gateLayout={gateLayout}
+                                            viewPosition={viewPosition}
+                                        />
+                                    ) : null
                             )
-                        )
                     } </SchematicViewport>
                 </div>
             </DraggableCore>

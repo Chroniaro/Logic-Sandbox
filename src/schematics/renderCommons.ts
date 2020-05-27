@@ -1,5 +1,5 @@
 import {corners, Dimensions, padRectangle, Point, project, Rectangle} from "../util/geometry";
-import {Group, Leaf} from "../util/layout";
+import {Group, Layout, Leaf} from "../util/layout";
 
 export const styleOptions = {
     fontSize: 16,
@@ -89,6 +89,11 @@ export function renderIOBox(graphics: CanvasRenderingContext2D, bounds: Rectangl
     graphics.stroke();
 
     graphics.restore();
+}
+
+export function renderIOBoxColumn(graphics: CanvasRenderingContext2D, column: Layout<Group>, type: 'input' | 'output') {
+    for (const box of Object.values(column.children))
+        renderIOBox(graphics, box.boundary, type);
 }
 
 export function estimateTextDimensions(text: string): Dimensions {

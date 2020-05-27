@@ -4,7 +4,7 @@ import {
     fillText,
     getIOBoxColumn,
     renderGateBody,
-    renderIOBox,
+    renderIOBoxColumn,
     styleOptions
 } from "./renderCommons";
 import layout from "../util/layout";
@@ -21,7 +21,7 @@ export interface StandardGate {
     }
 }
 
-export function getStandardGateLayout(gate: StandardGate) {
+function getLayoutGeometry(gate: StandardGate) {
     const {textMargin} = styleOptions;
     const {
         name,
@@ -30,7 +30,7 @@ export function getStandardGateLayout(gate: StandardGate) {
         numOutputs,
     } = gate.data;
 
-    const gateLayout = layout(position, {
+    return layout(position, {
         type: 'group',
         direction: 'horizontal',
         children: {
@@ -50,21 +50,28 @@ export function getStandardGateLayout(gate: StandardGate) {
             outputs: getIOBoxColumn(numOutputs)
         }
     });
+}
 
+export interface StandardGateLayout {
+    type: 'standard';
+    data: {
+        name: string;
+        layout: ReturnType<typeof getLayoutGeometry>;
+    }
+}
+
+export function getStandardGateLayout(gate: StandardGate): StandardGateLayout {
     return {
         type: 'standard',
         data: {
-            name,
-            layout: gateLayout,
+            name: gate.data.name,
+            layout: getLayoutGeometry(gate),
         }
     }
 }
 
-export type StandardGateLayout = ReturnType<typeof getStandardGateLayout>;
-
 export function renderStandardGate(graphics: CanvasRenderingContext2D, gateLayout: StandardGateLayout): void {
     const {font, fontSize} = styleOptions;
-
     const {name, layout} = gateLayout.data;
 
     renderGateBody(graphics, layout.children.body.boundary);
@@ -73,9 +80,6 @@ export function renderStandardGate(graphics: CanvasRenderingContext2D, gateLayou
     graphics.font = fontSize + "px " + font;
     fillText(graphics, layout.children.body.children.nameRegion.boundary, name);
 
-    for (const input of Object.values(layout.children.inputs.children))
-        renderIOBox(graphics, input.boundary, 'input');
-
-    for (const output of Object.values(layout.children.outputs.children))
-        renderIOBox(graphics, output.boundary, 'output');
+    renderIOBoxColumn(graphics, layout.children.inputs, 'input');
+    renderIOBoxColumn(graphics, layout.children.outputs, 'output');
 }

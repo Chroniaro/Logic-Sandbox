@@ -6,9 +6,10 @@ import {
     StandardLinkageLayout
 } from "./standardLinkage";
 import {enclosingRectangle, intersects, Point, Rectangle, rectangleToXYWH} from "../util/geometry";
+import {getIOPortLayout, IOPort, IOPortLayout, renderIOPort} from "./IOPort";
 
-export type Gate = StandardGate;
-export type GateLayout = StandardGateLayout;
+export type Gate = StandardGate | IOPort;
+export type GateLayout = StandardGateLayout | IOPortLayout;
 
 export type Linkage = StandardLinkage;
 export type LinkageLayout = StandardLinkageLayout;
@@ -47,8 +48,13 @@ export function getSchematicLayout(schematic: Schematic): SchematicLayout {
 
 // these functions will get more interesting when there are multiple different types of things
 
-function getGateLayout(gate: Gate) {
-    return getStandardGateLayout(gate);
+function getGateLayout(gate: Gate): GateLayout {
+    switch (gate.type) {
+        case 'standard':
+            return getStandardGateLayout(gate);
+        case 'io':
+            return getIOPortLayout(gate);
+    }
 }
 
 function getLinkageLayout(linkage: Linkage) {
@@ -86,10 +92,12 @@ function renderGate(graphics: CanvasRenderingContext2D, layout: GateLayout) {
     graphics.rect(...rectangleToXYWH(gateBoundary));
     graphics.clip();
 
-    // noinspection JSRedundantSwitchStatement
     switch (layout.type) {
         case 'standard':
             renderStandardGate(graphics, layout);
+            break;
+        case 'io':
+            renderIOPort(graphics, layout);
             break;
     }
 
